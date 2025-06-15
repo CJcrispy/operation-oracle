@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Path of the Signal</title>
+  <style>
+    body {
+      font-family: 'MS Sans Serif', sans-serif;
+      background-color: #008080;
+      color: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .window {
+      background-color: #C0C0C0;
+      border: 2px solid #000;
+      padding: 16px;
+      box-shadow: 4px 4px 0 #404040;
+    }
+
+    .titlebar {
+      background: #000080;
+      color: white;
+      padding: 4px 8px;
+      font-weight: bold;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 4px;
+      margin: 10px 0;
+    }
+
+    .cell {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px inset #FFF;
+      background-color: white;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .active {
+      background-color: yellow;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 8px;
+      font-family: 'MS Sans Serif', sans-serif;
+    }
+
+    #resetBtn {
+      display: none;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">ORACLE Challenge - path_signal.exe</div>
+    <div class="grid" id="grid"></div>
+    <button id="resetBtn" onclick="resetGame()">Reset Puzzle</button>
+    <div id="message"></div>
+  </div>
+
+  <script>
+    const directions = ['>', '<', '^', 'v'];
+    const gridSize = 5;
+    let gridData = [];
+    let start = [0, 0];
+    let interval;
+
+    function generateRandomPath() {
+      const path = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
+      let x = 0, y = 0;
+      const mainPath = [[x, y]];
+
+      while (x < gridSize - 1 || y < gridSize - 1) {
+        if (x < gridSize - 1 && (Math.random() < 0.6 || y === gridSize - 1)) {
+          path[y][x] = '>';
+          x++;
+        } else if (y < gridSize - 1) {
+          path[y][x] = 'v';
+          y++;
+        }
+        mainPath.push([x, y]);
+      }
+
+      // Replace some path elements with 'o', skipping the first two
+      let replaced = 0;
+      while (replaced < 3) {
+        const i = Math.floor(Math.random() * (mainPath.length - 2)) + 2; // skip first 2
+        const [px, py] = mainPath[i];
+        if (['>', '<', '^', 'v'].includes(path[py][px])) {
+          path[py][px] = 'o';
+          replaced++;
+        }
+      }
+
+      return path;
+    }
+
+    function createGrid() {
+      clearInterval(interval);
+      document.getElementById('message').textContent = '';
+      document.getElementById('resetBtn').style.display = 'none';
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      gridData = generateRandomPath();
+
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          const value = gridData[y][x];
+          cell.textContent = value;
+
+          if (value === 'o') {
+            cell.onclick = () => {
+              let current = cell.textContent;
+              let idx = directions.indexOf(current);
+              cell.textContent = directions[(idx + 1) % directions.length];
+              gridData[y][x] = cell.textContent;
+            };
+          }
+
+          grid.appendChild(cell);
+        }
+      }
+
+      runSignal();
+    }
+
+    function runSignal() {
+      let [x, y] = [...start];
+      let steps = 0;
+      interval = setInterval(() => {
+        const dir = gridData[y][x];
+        const cell = document.querySelector(`.cell[data-x='${x}'][data-y='${y}']`);
+        if (cell) cell.classList.add('active');
+
+        if (dir === '>') x++;
+        else if (dir === '<') x--;
+        else if (dir === '^') y--;
+        else if (dir === 'v') y++;
+        else {
+          clearInterval(interval);
+          document.getElementById('message').textContent = 'Signal lost. Puzzle failed.';
+          document.getElementById('resetBtn').style.display = 'block';
+          return;
+        }
+
+        if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) {
+          clearInterval(interval);
+          document.getElementById('message').textContent = 'Signal lost. Out of bounds.';
+          document.getElementById('resetBtn').style.display = 'block';
+          return;
+        }
+
+        if (x === gridSize - 1 && y === gridSize - 1) {
+          clearInterval(interval);
+          document.getElementById('message').textContent = 'Signal complete. Access granted.';
+          return;
+        }
+
+        steps++;
+        if (steps > 30) {
+          clearInterval(interval);
+          document.getElementById('message').textContent = 'Signal lost. Timeout.';
+          document.getElementById('resetBtn').style.display = 'block';
+        }
+      }, 500);
+    }
+
+    function resetGame() {
+      createGrid();
+    }
+
+    createGrid();
+  </script>
+</body>
+</html>

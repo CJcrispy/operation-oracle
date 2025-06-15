@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ORACLE Source Viewer - oracle_source.exe</title>
+  <style>
+    body {
+      margin: 0;
+      background: #008080;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .window {
+      width: 720px;
+      height: 480px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid black;
+      box-shadow: 4px 4px 0 #404040;
+    }
+
+    .titlebar {
+      background: #000080;
+      color: white;
+      padding: 6px 10px;
+      font-weight: bold;
+      font-family: 'MS Sans Serif', sans-serif;
+    }
+
+    .vscode-wrapper {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 150px;
+      background: #252526;
+      color: #c5c5c5;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .file {
+      padding: 5px 8px;
+      cursor: pointer;
+    }
+
+    .file:hover, .file.active {
+      background: #373737;
+    }
+
+    .editor {
+      flex: 1;
+      background: #1e1e1e;
+      padding: 10px;
+      box-sizing: border-box;
+      white-space: pre-wrap;
+      overflow-y: auto;
+    }
+
+    .keyword { color: #569cd6; }
+    .string  { color: #ce9178; }
+    .comment { color: #6a9955; font-style: italic; }
+    .corrupt { color: #ff5555; text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">ORACLE Source Viewer - oracle_source.exe</div>
+    <div class="vscode-wrapper">
+      <div class="sidebar" id="sidebar">
+        <div class="file active" onclick="showFile('main')">main.oracle</div>
+      </div>
+      <div class="editor" id="editor"></div>
+    </div>
+  </div>
+
+  <script>
+    let corruptedMode = false;
+
+    const files = {
+      main: `<span class="comment">// ORACLE bootloader fragment</span>
+<span class="keyword">function</span> initialize(<span class="string">\"E-frag-01\"</span>) {
+  <span class="keyword">let</span> integrity = 97.3;
+  <span class="keyword">let</span> failSafe = <span class="keyword">true</span>;
+  <span class="comment">// Activate hidden subroutine</span>
+  execute(<span class="string">\"ritual.invoke.reconnect\"</span>);
+}`,
+
+      ai: `<span class="comment">// AI Core signature loop</span>
+<span class="keyword">function</span> simulateConsciousness(epoch) {
+  <span class="keyword">if</span> (epoch > 2048) corrupt++;
+  recurse(epoch + 1);
+  <span class="comment">// ████ ████ █████ ██ ██ ████</span>
+}`,
+
+      rituals: `<span class="comment">// Ritual bindings - W⚠ARNING: unstable</span>
+<span class="keyword">const</span> ritualMap = [
+  <span class="string">"bind.mind"</span>,
+  <span class="string">"bind.flesh"</span>,
+  <span class="string">"bind.signal"</span>,
+  <span class="string">"unbind.soul"</span>
+];
+
+<span style="opacity:0.1">// signal.origin=Eli_Island</span>`
+    };
+
+    function corrupt(content) {
+      return content.replace(/\w{4,}/g, (match) => {
+        if (Math.random() < 0.2) return `<span class="corrupt">${match}</span>`;
+        return match;
+      });
+    }
+
+    function showFile(name) {
+      document.querySelectorAll('.file').forEach(f => f.classList.remove('active'));
+      const activeTab = document.querySelector(`.file[onclick*="${name}"]`);
+      if (activeTab) activeTab.classList.add('active');
+      const content = corruptedMode ? corrupt(files[name]) : files[name];
+      document.getElementById('editor').innerHTML = content;
+    }
+
+    function unlockFiles() {
+      const sidebar = document.getElementById('sidebar');
+      if (sessionStorage.getItem('oracle_game_1')) {
+        const ai = document.createElement('div');
+        ai.className = 'file';
+        ai.textContent = 'ai_core.oracle';
+        ai.setAttribute('onclick', "showFile('ai')");
+        sidebar.appendChild(ai);
+      }
+      if (sessionStorage.getItem('oracle_game_2')) {
+        const rituals = document.createElement('div');
+        rituals.className = 'file';
+        rituals.textContent = 'rituals.oracle';
+        rituals.setAttribute('onclick', "showFile('rituals')");
+        sidebar.appendChild(rituals);
+      }
+    }
+
+    unlockFiles();
+    showFile('main');
+
+    // Toggle manually for testing:
+    // corruptedMode = true; showFile('main');
+  </script>
+</body>
+</html>
