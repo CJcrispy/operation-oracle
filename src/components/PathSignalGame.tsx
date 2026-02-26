@@ -133,15 +133,18 @@ export default function PathSignalGame() {
   };
 
   return (
-    <div className="rounded border-2 border-black bg-[#c0c0c0] p-4 font-sans">
-      <div className="mb-2 bg-[#000080] px-2 py-1 font-bold text-white">
+    <div className="rounded border-2 border-black bg-[#c0c0c0] p-2 sm:p-4 font-sans min-w-0 overflow-auto">
+      <div className="mb-2 bg-[#000080] px-2 py-1 font-bold text-white text-xs sm:text-base">
         ORACLE Challenge - path_signal.exe
       </div>
       <div
-        className="grid gap-1"
+        className="grid gap-0.5 sm:gap-1 w-fit max-w-full mx-auto"
         style={{
-          gridTemplateColumns: `repeat(${GRID_SIZE}, 60px)`,
-          gridTemplateRows: `repeat(${GRID_SIZE}, 60px)`,
+          gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
+          gridTemplateRows: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
+          width: "min(100%, 320px)",
+          minWidth: "220px",
+          aspectRatio: "1",
         }}
       >
         {gridData.map((row, gy) =>
@@ -150,7 +153,7 @@ export default function PathSignalGame() {
               key={`${gy}-${gx}`}
               type="button"
               onClick={() => handleCellClick(gx, gy)}
-              className={`flex h-[60px] w-[60px] items-center justify-center border-2 border-b-[#fff] border-r-[#fff] border-t-[#808080] border-l-[#808080] bg-white text-2xl ${
+              className={`flex aspect-square min-h-[44px] min-w-[44px] max-h-[64px] max-w-[64px] w-full h-full items-center justify-center border-2 border-b-[#fff] border-r-[#fff] border-t-[#808080] border-l-[#808080] bg-white text-lg sm:text-2xl ${
                 activeCell?.[0] === gx && activeCell?.[1] === gy
                   ? "bg-yellow-400 font-bold"
                   : ""

@@ -92,42 +92,42 @@ export default function Desktop() {
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-[#008080] select-none font-sans">
-      {/* Desktop area */}
-      <div className="absolute inset-0 pb-10">
-        {/* Desktop icons */}
-        <div className="flex flex-col gap-1 p-4" style={{ width: 100 }}>
+    <div className="relative min-h-dvh min-h-screen w-full max-w-[100vw] overflow-hidden bg-[#008080] select-none font-sans">
+      {/* Desktop area - taskbar height pb-10 sm:pb-10 */}
+      <div className="absolute inset-0 pb-12 sm:pb-10">
+        {/* Desktop icons - grid on small screens for better touch targets */}
+        <div className="flex flex-col gap-1 p-3 sm:p-4 w-[100px] sm:w-[100px]">
           <button
             type="button"
             onClick={() => openApp("unlocker")}
-            className="flex flex-col items-center gap-1 rounded p-1 hover:bg-[#000080] hover:text-white"
+            className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 hover:bg-[#000080] hover:text-white active:bg-[#000080]"
           >
-            <span className="h-10 w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5" />
-            <span className="text-center text-xs">UNLOCKER.sys</span>
+            <span className="h-8 w-8 sm:h-10 sm:w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0" />
+            <span className="text-center text-[10px] sm:text-xs leading-tight">UNLOCKER.sys</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("path_signal")}
-            className="flex flex-col items-center gap-1 rounded p-1 hover:bg-[#000080] hover:text-white"
+            className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 hover:bg-[#000080] hover:text-white active:bg-[#000080]"
           >
-            <span className="h-10 w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5" />
-            <span className="text-center text-xs">Path Signal</span>
+            <span className="h-8 w-8 sm:h-10 sm:w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0" />
+            <span className="text-center text-[10px] sm:text-xs leading-tight">Path Signal</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("chess")}
-            className="flex flex-col items-center gap-1 rounded p-1 hover:bg-[#000080] hover:text-white"
+            className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 hover:bg-[#000080] hover:text-white active:bg-[#000080]"
           >
-            <span className="h-10 w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5" />
-            <span className="text-center text-xs">Chess</span>
+            <span className="h-8 w-8 sm:h-10 sm:w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0" />
+            <span className="text-center text-[10px] sm:text-xs leading-tight">Chess</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("test")}
-            className="flex flex-col items-center gap-1 rounded p-1 hover:bg-[#000080] hover:text-white"
+            className="flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 hover:bg-[#000080] hover:text-white active:bg-[#000080]"
           >
-            <span className="h-10 w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5" />
-            <span className="text-center text-xs">Source Viewer</span>
+            <span className="h-8 w-8 sm:h-10 sm:w-10 rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0" />
+            <span className="text-center text-[10px] sm:text-xs leading-tight">Source Viewer</span>
           </button>
         </div>
 
@@ -140,8 +140,8 @@ export default function Desktop() {
                   key={win.id}
                   className="absolute pointer-events-auto"
                   style={{
-                    left: 80 + i * 24,
-                    top: 40 + i * 24,
+                    left: `max(0.5rem, ${80 + i * 24}px)`,
+                    top: `max(0.5rem, ${40 + i * 24}px)`,
                   }}
                 >
                   <Win98Window
@@ -165,14 +165,14 @@ export default function Desktop() {
       </div>
 
       {/* Taskbar */}
-      <div className="absolute bottom-0 left-0 right-0 flex h-10 items-center justify-between border-t-2 border-[#dfdfdf] bg-[#c0c0c0] px-2 shadow-[0_-2px_0_#fff]">
-        <div className="relative flex items-center">
+      <div className="absolute bottom-0 left-0 right-0 flex h-10 min-h-[44px] shrink-0 flex-wrap items-center justify-between gap-1 border-t-2 border-[#dfdfdf] bg-[#c0c0c0] px-2 shadow-[0_-2px_0_#fff] safe-area-inset-bottom">
+        <div className="relative flex items-center shrink-0">
           <button
             type="button"
             onClick={() => setStartMenuOpen((o) => !o)}
-            className="flex h-9 min-w-[104px] items-center border-2 border-t-[#fff] border-l-[#fff] border-r-[#808080] border-b-[#808080] bg-[#c0c0c0] px-2 font-bold shadow-[1px_1px_0_#000] hover:bg-[#e0e0e0]"
+            className="flex h-9 min-h-[44px] min-w-[80px] sm:min-w-[104px] items-center border-2 border-t-[#fff] border-l-[#fff] border-r-[#808080] border-b-[#808080] bg-[#c0c0c0] px-2 font-bold shadow-[1px_1px_0_#000] hover:bg-[#e0e0e0] active:bg-[#e0e0e0]"
           >
-            <span className="ml-6">Start</span>
+            <span className="ml-4 sm:ml-6 text-xs sm:text-base">Start</span>
           </button>
           {startMenuOpen && (
             <>
@@ -181,7 +181,7 @@ export default function Desktop() {
                 role="presentation"
                 onClick={() => setStartMenuOpen(false)}
               />
-              <div className="absolute bottom-full left-0 z-50 mt-1 w-72 border-2 border-t-[#fff] border-l-[#fff] border-r-[#808080] border-b-[#808080] bg-[#c0c0c0] shadow-[2px_2px_0_#000]">
+              <div className="absolute bottom-full left-0 z-50 mt-1 w-[min(18rem,100vw-1rem)] max-w-72 border-2 border-t-[#fff] border-l-[#fff] border-r-[#808080] border-b-[#808080] bg-[#c0c0c0] shadow-[2px_2px_0_#000]">
                 <div className="border-b-2 border-[#000080] bg-[#000080] px-2 py-1 text-white">
                   Operation ORACLE
                 </div>
@@ -231,7 +231,7 @@ export default function Desktop() {
             </>
           )}
         </div>
-        <div className="flex gap-1">
+        <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
           {windows.map((win) => (
             <button
               key={win.id}
@@ -245,17 +245,17 @@ export default function Desktop() {
                   )
                 )
               }
-              className={`flex h-7 min-w-[120px] items-center border border-[#808080] px-2 text-sm ${
+              className={`flex h-7 min-w-[72px] sm:min-w-[120px] shrink-0 items-center border border-[#808080] px-2 text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none ${
                 win.focused && !win.minimized
                   ? "border-b-[#c0c0c0] bg-[#c0c0c0]"
-                  : "bg-[#c0c0c0] hover:bg-[#e0e0e0]"
+                  : "bg-[#c0c0c0] hover:bg-[#e0e0e0] active:bg-[#e0e0e0]"
               }`}
             >
-              {win.title.slice(0, 16)}...
+              {win.title.slice(0, 12)}…
             </button>
           ))}
         </div>
-        <div className="text-sm">Operation ORACLE</div>
+        <div className="hidden shrink-0 text-xs sm:block sm:text-sm">Operation ORACLE</div>
       </div>
     </div>
   );

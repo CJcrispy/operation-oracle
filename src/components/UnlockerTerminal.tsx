@@ -77,7 +77,7 @@ export default function UnlockerTerminal({ embedded = false }: UnlockerTerminalP
     <>
       <div
         ref={terminalRef}
-        className={`overflow-y-auto border border-[#3c3c3c] bg-[#0c0c0c] p-4 font-mono text-sm text-[#00ffea] ${embedded ? "h-[380px]" : "h-[400px] border-t"}`}
+        className={`overflow-y-auto border border-[#3c3c3c] bg-[#0c0c0c] p-3 sm:p-4 font-mono text-xs sm:text-sm text-[#00ffea] ${embedded ? "min-h-[200px] h-[min(380px,60dvh)]" : "min-h-[240px] h-[min(400px,70dvh)] border-t"}`}
       >
           {lines.map((line, i) => (
             <div
@@ -110,8 +110,8 @@ export default function UnlockerTerminal({ embedded = false }: UnlockerTerminalP
   }
 
   return (
-    <div className="min-h-screen bg-[#012456] p-5 font-mono text-[#dcdcdc]">
-      <div className="mx-auto w-full max-w-[700px] border-2 border-[#3c3c3c] bg-[#1e1e1e] shadow-[3px_3px_0_0_#000]">
+    <div className="min-h-dvh min-h-screen bg-[#012456] p-3 sm:p-5 font-mono text-[#dcdcdc]">
+      <div className="mx-auto w-full max-w-[700px] min-w-0 border-2 border-[#3c3c3c] bg-[#1e1e1e] shadow-[3px_3px_0_0_#000]">
         <div className="flex items-center justify-between bg-[#0078d7] px-2.5 py-1 font-bold text-white">
           <span className="text-sm">UNLOCKER.sys - Windows 98 Terminal Shell</span>
           <button type="button" className="h-5 w-5 border border-[#808080] bg-[#c0c0c0] text-xs leading-none" aria-label="Close">×</button>

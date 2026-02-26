@@ -71,18 +71,18 @@ export default function OracleSourceViewer() {
   })();
 
   return (
-    <div className="flex h-full flex-col overflow-hidden border-2 border-black bg-[#1e1e1e] text-[#d4d4d4] shadow-[4px_4px_0_#404040]">
-      <div className="border-b border-[#333] bg-[#000080] px-2 py-1.5 font-sans font-bold text-white">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden border-2 border-black bg-[#1e1e1e] text-[#d4d4d4] shadow-[4px_4px_0_#404040]">
+      <div className="shrink-0 border-b border-[#333] bg-[#000080] px-2 py-1.5 font-sans font-bold text-white text-xs sm:text-base truncate">
         ORACLE Source Viewer - oracle_source.exe
       </div>
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        <div className="w-[150px] shrink-0 overflow-y-auto bg-[#252526] p-2 text-[#c5c5c5]">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden sm:flex-row">
+        <div className="flex shrink-0 flex-row gap-1 overflow-x-auto border-b border-[#333] bg-[#252526] p-2 text-[#c5c5c5] sm:w-[150px] sm:flex-col sm:border-b-0 sm:border-r">
           {unlockedFiles.map((id) => (
             <button
               key={id}
               type="button"
               onClick={() => showFile(id)}
-              className={`block w-full rounded px-2 py-1.5 text-left text-sm hover:bg-[#373737] ${
+              className={`shrink-0 rounded px-2 py-1.5 text-left text-xs sm:text-sm hover:bg-[#373737] ${
                 activeFile === id ? "bg-[#373737]" : ""
               }`}
             >
@@ -91,7 +91,7 @@ export default function OracleSourceViewer() {
           ))}
         </div>
         <div
-          className="min-w-0 flex-1 overflow-y-auto p-2 font-mono text-sm leading-relaxed whitespace-pre-wrap"
+          className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-auto p-2 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap"
           dangerouslySetInnerHTML={{ __html: editorContent }}
         />
       </div>

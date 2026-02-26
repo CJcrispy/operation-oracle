@@ -4,6 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "UNLOCKER.sys",
   description: "Windows 98 Terminal Shell - ECTH Distro",
+  viewport: { width: "device-width", initialScale: 1, maximumScale: 5 },
 };
 
 export default function RootLayout({

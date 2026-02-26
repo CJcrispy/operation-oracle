@@ -44,7 +44,11 @@ export default function Win98Window({
       className={`absolute flex flex-col border-2 border-black bg-[#c0c0c0] shadow-[2px_2px_0_#404040] ${className}`}
       style={{
         width: defaultWidth,
-        minHeight: defaultHeight,
+        minWidth: 280,
+        height: defaultHeight,
+        minHeight: 200,
+        maxWidth: "min(100vw - 1rem, " + defaultWidth + "px)",
+        maxHeight: "min(100dvh - 5rem, " + defaultHeight + "px)",
         zIndex: isFocused ? 50 : 40,
         boxShadow: isFocused
           ? "2px 2px 0 #404040, 4px 4px 0 #000"
@@ -52,8 +56,8 @@ export default function Win98Window({
       }}
     >
       {/* Title bar */}
-      <div className="flex items-center justify-between bg-[#000080] px-1 py-0.5 text-white">
-        <span className="truncate text-sm font-bold">{title}</span>
+      <div className="flex min-h-[28px] shrink-0 items-center justify-between bg-[#000080] px-1 py-0.5 text-white">
+        <span className="truncate text-xs sm:text-sm font-bold">{title}</span>
         <div className="flex items-center gap-0.5">
           {onMinimize && (
             <button
@@ -82,7 +86,7 @@ export default function Win98Window({
         </div>
       </div>
       {/* Content */}
-      <div className="min-h-0 flex-1 overflow-auto border border-t-0 border-black bg-[#c0c0c0] p-1">
+      <div className="min-h-0 flex-1 overflow-auto overflow-x-hidden border border-t-0 border-black bg-[#c0c0c0] p-1">
         {children}
       </div>
     </div>
