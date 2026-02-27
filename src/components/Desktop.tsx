@@ -2,6 +2,17 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(typeof window !== "undefined" && window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 function DesktopClock({ backwards = false }: { backwards?: boolean }) {
   const [time, setTime] = useState("");
   const baseTs = useRef(Date.now());
@@ -126,6 +137,7 @@ export default function Desktop() {
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [shaking, setShaking] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleLogout = useCallback(() => {
     setShaking(true);
@@ -378,10 +390,14 @@ export default function Desktop() {
                 <div
                   key={win.id}
                   className="absolute pointer-events-auto"
-                  style={{
-                    left: win.position ? Math.max(0, win.position.x) : 80,
-                    top: win.position ? Math.max(0, win.position.y) : 40,
-                  }}
+                  style={
+                    isMobile
+                      ? { left: 8, right: 8, top: 8 }
+                      : {
+                          left: win.position ? Math.max(0, win.position.x) : 80,
+                          top: win.position ? Math.max(0, win.position.y) : 40,
+                        }
+                  }
                 >
                   <Win98Window
                     id={win.id}

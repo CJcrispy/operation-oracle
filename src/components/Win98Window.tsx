@@ -80,12 +80,12 @@ export default function Win98Window({
       onFocus={handleFocus}
       className={`absolute flex flex-col border-2 border-black bg-[#c0c0c0] shadow-[2px_2px_0_#404040] ${isDragging ? "cursor-grabbing" : ""} ${className}`}
       style={{
-        width: defaultWidth,
+        width: "100%",
         minWidth: 280,
+        maxWidth: "min(calc(100vw - 2rem), " + defaultWidth + "px)",
         height: defaultHeight,
-        minHeight: 200,
-        maxWidth: "min(100vw - 1rem, " + defaultWidth + "px)",
-        maxHeight: "min(100dvh - 5rem, " + defaultHeight + "px)",
+        minHeight: 160,
+        maxHeight: "min(calc(100dvh - 6rem), " + defaultHeight + "px)",
         zIndex: isFocused ? 50 : 40,
         boxShadow: isFocused
           ? "2px 2px 0 #404040, 4px 4px 0 #000"
