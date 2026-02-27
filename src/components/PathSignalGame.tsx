@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useGame } from "@/context/GameContext";
+import { FILE_NAMES } from "@/lib/content";
 
 const ROTATE_ORDER = [">", "v", "<", "^"];
 const GRID_SIZE = 5;
@@ -85,6 +87,7 @@ function runSignal(
 }
 
 export default function PathSignalGame() {
+  const { pendingUnlock, markUnlocked, setPendingUnlock } = useGame();
   const [gridData, setGridData] = useState<string[][]>(generateRandomPath);
   const gridRef = useRef(gridData);
   gridRef.current = gridData;
@@ -119,6 +122,14 @@ export default function PathSignalGame() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [runKey]);
+
+  // On success during unlock flow: mark file 3 decrypted
+  useEffect(() => {
+    if (message === "Signal complete. Access granted." && pendingUnlock === 3) {
+      markUnlocked(3, FILE_NAMES[3]);
+      setPendingUnlock(null);
+    }
+  }, [message, pendingUnlock, markUnlocked, setPendingUnlock]);
 
   const handleCellClick = (x: number, y: number) => {
     const value = gridData[y][x];

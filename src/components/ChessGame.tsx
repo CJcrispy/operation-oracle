@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { useGame } from "@/context/GameContext";
+import { FILE_NAMES } from "@/lib/content";
 
 const PIECES: Record<string, string> = {
   r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
@@ -91,13 +93,28 @@ function addRayMoves(board: Board, x: number, y: number, dx: number, dy: number,
 }
 
 function getRookMoves(board: Board, x: number, y: number): Square[] {
-  const isW = isWhite(board[y][x]);
-  return [
-    ...addRayMoves(board, x, y, 1, 0, isW),
-    ...addRayMoves(board, x, y, -1, 0, isW),
-    ...addRayMoves(board, x, y, 0, 1, isW),
-    ...addRayMoves(board, x, y, 0, -1, isW),
-  ];
+  const piece = board[y][x];
+  const isW = isWhite(piece);
+  const isFriendly = isW ? isWhite : isBlack;
+  const isEnemy = isW ? isBlack : isWhite;
+  const moves: Square[] = [];
+  // Horizontal and vertical: (±1, 0) and (0, ±1) — any number of squares in each direction
+  const directions: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  for (const [dx, dy] of directions) {
+    let nx = x + dx, ny = y + dy;
+    while (nx >= 0 && nx < 8 && ny >= 0 && ny < 8) {
+      const p = board[ny][nx];
+      if (p === ".") {
+        moves.push([nx, ny]);
+      } else {
+        if (isEnemy(p)) moves.push([nx, ny]);
+        break;
+      }
+      nx += dx;
+      ny += dy;
+    }
+  }
+  return moves;
 }
 
 function getBishopMoves(board: Board, x: number, y: number): Square[] {
@@ -302,6 +319,7 @@ function getAIMove(board: Board, castling: { K?: boolean; Q?: boolean; k?: boole
 }
 
 export default function ChessGame() {
+  const { pendingUnlock, markUnlocked, setPendingUnlock } = useGame();
   const [board, setBoard] = useState<Board>(() => INITIAL_BOARD.map((r) => [...r]));
   const [whiteTurn, setWhiteTurn] = useState(true);
   const [selected, setSelected] = useState<Square | null>(null);
@@ -450,6 +468,14 @@ export default function ChessGame() {
       return () => clearTimeout(timer);
     }
   }, [whiteTurn, promo, gameOver, runAIMove]);
+
+  // On player win during unlock flow: mark file 2 decrypted
+  useEffect(() => {
+    if (gameOver === "White wins by checkmate" && pendingUnlock === 2) {
+      markUnlocked(2, FILE_NAMES[2]);
+      setPendingUnlock(null);
+    }
+  }, [gameOver, pendingUnlock, markUnlocked, setPendingUnlock]);
 
   // Display: Black at bottom (rows 0-1), White at top (rows 6-7). Flip rows for rendering.
   const displayBoard = useMemo(() => board.slice().reverse(), [board]);

@@ -1,74 +1,77 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useGame } from "@/context/GameContext";
+import type { DocId } from "@/context/GameContext";
 
-type FileId = "main" | "ai" | "rituals";
+const DOC_LABELS: Record<DocId, string> = {
+  bootloader: "bootloader.oracle",
+  f1: "FROGFACTS.TXT [decrypted]",
+  f2: "SANDWICHMAKER.BAT [decrypted]",
+  f3: "BEEPBOOP.ZIP [decrypted]",
+  f4: "GARFIELD.EXE [decrypted]",
+  f5: "SLIME2.HTML [decrypted]",
+  f6: "UNCLEDONK.PPT [decrypted]",
+  f7: "DO_NOT_OPEN_THIS_ONE.OKAY [decrypted]",
+};
 
-const FILES: Record<FileId, string> = {
-  main: `<span class="text-[#6a9955] italic">// ORACLE bootloader fragment</span>
-<span class="text-[#569cd6]">function</span> initialize(<span class="text-[#ce9178]">"E-frag-01"</span>) {
+const DOCS: Record<DocId, string> = {
+  bootloader: `<span class="text-[#6a9955] italic">// ORACLE bootloader - ECTH Distro</span>
+<span class="text-[#569cd6]">function</span> initialize(<span class="text-[#ce9178]">"E-frag-00"</span>) {
   <span class="text-[#569cd6]">let</span> integrity = 97.3;
-  <span class="text-[#569cd6]">let</span> failSafe = <span class="text-[#569cd6]">true</span>;
-  <span class="text-[#6a9955] italic">// Activate hidden subroutine</span>
-  execute(<span class="text-[#ce9178]">"ritual.invoke.reconnect"</span>);
+  <span class="text-[#569cd6]">let</span> cognitiveShielding = <span class="text-[#569cd6]">true</span>;
+  <span class="text-[#6a9955] italic">// Backdoor failsafes: ACTIVE</span>
 }`,
-  ai: `<span class="text-[#6a9955] italic">// AI Core signature loop</span>
-<span class="text-[#569cd6]">function</span> simulateConsciousness(epoch) {
-  <span class="text-[#569cd6]">if</span> (epoch > 2048) corrupt++;
-  recurse(epoch + 1);
-  <span class="text-[#6a9955] italic">// ████ ████ █████ ██ ██ ████</span>
-}`,
-  rituals: `<span class="text-[#6a9955] italic">// Ritual bindings - W⚠ARNING: unstable</span>
-<span class="text-[#569cd6]">const</span> ritualMap = [
-  <span class="text-[#ce9178]">"bind.mind"</span>,
-  <span class="text-[#ce9178]">"bind.flesh"</span>,
-  <span class="text-[#ce9178]">"bind.signal"</span>,
-  <span class="text-[#ce9178]">"unbind.soul"</span>
-];
-
-<span class="opacity-10">// signal.origin=Eli_Island</span>`,
+  f1: `<span class="text-[#6a9955]">[BEHAVIORAL GHOSTS - DECRYPTED]</span>
+Internal memo: Pattern recognition overflow in FROGFACTS module.
+References to "Cognitive Shielding" detected. Backdoor protocol ████.
+<span class="text-[#6a9955] italic">// fragment.01.corrupted</span>`,
+  f2: `<span class="text-[#6a9955]">[UI INJECTION - DECRYPTED]</span>
+SANDWICHMAKER.BAT contains embedded challenge protocol.
+Oracle uses strategic decision trees. Pattern: minimax approximation.
+<span class="text-[#6a9955] italic">// Containment Log excerpt: "Behavioral override attempted"</span>`,
+  f3: `<span class="text-[#6a9955]">[SIGNAL EMBED - DECRYPTED]</span>
+BEEPBOOP.ZIP: Signal routing validation. Path-of-signal protocol.
+References "Eli Island" in checksum. <span class="opacity-60">[REDACTED]</span>`,
+  f4: `<span class="text-[#6a9955]">[IDENTITY INTERFERENCE - LOCKED]</span>
+GARFIELD.EXE: Awaiting decryption.`,
+  f5: `<span class="text-[#6a9955]">[NETWORK NODE - LOCKED]</span>
+SLIME2.HTML: Awaiting decryption.`,
+  f6: `<span class="text-[#6a9955]">[CULT DOCTRINE - LOCKED]</span>
+UNCLEDONK.PPT: Awaiting decryption.`,
+  f7: `<span class="text-[#6a9955]">[FINAL PROTOCOL - LOCKED]</span>
+DO_NOT_OPEN_THIS_ONE.OKAY: Vault sealed.`,
 };
 
 function corrupt(content: string): string {
   return content.replace(/\w{4,}/g, (match) => {
-    if (Math.random() < 0.2) {
-      return `<span class="text-red-500 line-through">${match}</span>`;
+    if (Math.random() < 0.15) {
+      return `<span class="text-red-500/80 line-through">${match}</span>`;
     }
     return match;
   });
 }
 
-const FILE_LABELS: Record<FileId, string> = {
-  main: "main.oracle",
-  ai: "ai_core.oracle",
-  rituals: "rituals.oracle",
-};
-
 export default function OracleSourceViewer() {
-  const [activeFile, setActiveFile] = useState<FileId>("main");
-  const [corruptedMode, setCorruptedMode] = useState(false);
-  const [unlockedFiles, setUnlockedFiles] = useState<FileId[]>(["main"]);
+  const { unlockedFiles, requestedDocId, setRequestedDocId } = useGame();
+  const [activeFile, setActiveFile] = useState<DocId>("bootloader");
+
+  const availableDocs: DocId[] = ["bootloader", ...unlockedFiles.map((id) => `f${id}` as DocId)];
 
   useEffect(() => {
-    const unlocked: FileId[] = ["main"];
-    if (typeof window !== "undefined") {
-      if (sessionStorage.getItem("oracle_game_1")) unlocked.push("ai");
-      if (sessionStorage.getItem("oracle_game_2")) unlocked.push("rituals");
+    if (requestedDocId && availableDocs.includes(requestedDocId)) {
+      setActiveFile(requestedDocId);
+      setRequestedDocId(null);
     }
-    setUnlockedFiles(unlocked);
-  }, []);
+  }, [requestedDocId, availableDocs, setRequestedDocId]);
 
-  const showFile = useCallback(
-    (name: FileId) => {
-      setActiveFile(name);
-    },
-    []
-  );
+  useEffect(() => {
+    if (!availableDocs.includes(activeFile)) {
+      setActiveFile("bootloader");
+    }
+  }, [activeFile, availableDocs]);
 
-  const editorContent = (() => {
-    const raw = FILES[activeFile];
-    return corruptedMode ? corrupt(raw) : raw;
-  })();
+  const editorContent = DOCS[activeFile] ?? DOCS.bootloader;
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden border-2 border-black bg-[#1e1e1e] text-[#d4d4d4] shadow-[4px_4px_0_#404040]">
@@ -76,17 +79,17 @@ export default function OracleSourceViewer() {
         ORACLE Source Viewer - oracle_source.exe
       </div>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden sm:flex-row">
-        <div className="flex shrink-0 flex-row gap-1 overflow-x-auto border-b border-[#333] bg-[#252526] p-2 text-[#c5c5c5] sm:w-[150px] sm:flex-col sm:border-b-0 sm:border-r">
-          {unlockedFiles.map((id) => (
+        <div className="flex shrink-0 flex-row gap-1 overflow-x-auto border-b border-[#333] bg-[#252526] p-2 text-[#c5c5c5] sm:w-[180px] sm:flex-col sm:border-b-0 sm:border-r">
+          {availableDocs.map((id) => (
             <button
               key={id}
               type="button"
-              onClick={() => showFile(id)}
+              onClick={() => setActiveFile(id)}
               className={`shrink-0 rounded px-2 py-1.5 text-left text-xs sm:text-sm hover:bg-[#373737] ${
                 activeFile === id ? "bg-[#373737]" : ""
               }`}
             >
-              {FILE_LABELS[id]}
+              {DOC_LABELS[id]}
             </button>
           ))}
         </div>

@@ -1,49 +1,85 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useGame } from "@/context/GameContext";
+import { FILE_NAMES, FILE_REVEAL_NAMES, ORACLE_COUNTER_LINES } from "@/lib/content";
 
-const INITIAL_LINES = [
-  "UNLOCKER.sys [v0.72 - ECTH Distro]",
-  "Scanning local node...",
-  "Found 7 locked modules.",
-  "Cognitive shielding: WEAK",
-  "User access: GRANTED [INTERN]",
-  "",
-  "Available Files:",
-  "[1] FROGFACTS.TXT         - Encrypted - Behavioral Ghosts",
-  "[2] SANDWICHMAKER.BAT     - Flagged - UI Injection",
-  "[3] BEEPBOOP.ZIP          - Encoded - Signal Embed",
-  "[4] GARFIELD.EXE          - Masked - Identity Interference",
-  "[5] SLIME2.HTML           - Network - Spreading Node Active",
-  "[6] UNCLEDONK.PPT         - Fragmented - Cult Doctrine",
-  "[7] DO_NOT_OPEN_THIS_ONE.OKAY - Vaulted - Final Protocol",
-  "",
+const BATTLE_COMMANDS = ["trace", "sever", "contain", "override", "shutdown"] as const;
+const BATTLE_DAMAGE: Record<string, number> = {
+  trace: 8,
+  sever: 15,
+  contain: 12,
+  override: 20,
+  shutdown: 25,
+};
+const BATTLE_FAIL_CHANCE = 0.2; // 20% random fail
+
+const ORACLE_LINES = [
+  "// you are not authorized to view that fragment.",
+  "// cognitive shielding degraded.",
+  "// access pattern logged.",
+  "... did you hear that?",
+  "// fragment request denied.",
 ];
 
-type TerminalLine = { type: "output" | "input" | "response"; text: string };
-
-function processCommand(cmd: string): string {
-  switch (cmd.toLowerCase()) {
-    case "unlock 1":
-      return ">> UNLOCK SEQUENCE INITIATED: FROGFACTS.TXT\n>> Decryption active...\n>> Puzzle launch available.";
-    case "analyze 1":
-      return ">> File flagged for behavioral overwrite. Tracking patterns embedded.";
-    case "help":
-      return "> Commands: unlock [#], analyze [#], log, containment_status";
-    default:
-      return "> Unknown command or locked sequence.";
-  }
+function getContainmentWarning(pct: number): string {
+  if (pct <= 10) return "CRITICAL - CONTAINMENT FAILURE IMMINENT";
+  if (pct <= 25) return "WARNING - COGNITIVE SHIELDING CRITICAL";
+  if (pct <= 50) return "WARNING - SHIELDING DEGRADED";
+  if (pct <= 75) return "NOTICE - SHIELDING WEAKENED";
+  return "";
 }
 
-type UnlockerTerminalProps = { embedded?: boolean };
+type TerminalLine = { type: "output" | "input" | "response" | "oracle" | "finale"; text: string };
 
-export default function UnlockerTerminal({ embedded = false }: UnlockerTerminalProps) {
-  const [lines, setLines] = useState<TerminalLine[]>(
-    INITIAL_LINES.map((text) => ({ type: "output", text }))
-  );
+type UnlockerTerminalProps = { embedded?: boolean; onOpenApp?: (app: "chess" | "path_signal") => void };
+
+export default function UnlockerTerminal({ embedded = false, onOpenApp }: UnlockerTerminalProps) {
+  const {
+    containment,
+    unlockedFiles,
+    isUnlocked,
+    setPendingUnlock,
+    markUnlocked,
+    activateOracle,
+    finalePhase,
+    oracleStability,
+    triggerFinale,
+    setFinalePhase,
+    setBlisswareRed,
+    setClockBackwards,
+    setContainment,
+    setDesktopBlackout,
+    setIslandRevealed,
+    setBlisswareGlow,
+    reduceOracleStability,
+    setSystemInstability,
+  } = useGame();
+  const FILE_DESCS: Record<number, string> = {
+    1: "Encrypted - Behavioral Ghosts",
+    2: "Flagged - UI Injection",
+    3: "Encoded - Signal Embed",
+    4: "Masked - Identity Interference",
+    5: "Network - Spreading Node Active",
+    6: "Fragmented - Cult Doctrine",
+    7: "Vaulted - Final Protocol",
+  };
+  const [lines, setLines] = useState<TerminalLine[]>(() => [
+    { type: "output", text: "UNLOCKER.sys [v0.72 - ECTH Distro]" },
+    { type: "output", text: "Scanning local node..." },
+    { type: "output", text: "Found 7 locked modules." },
+    { type: "output", text: "Cognitive shielding: WEAK" },
+    { type: "output", text: "User access: GRANTED [INTERN]" },
+    { type: "output", text: "" },
+    { type: "output", text: "Available Files:" },
+  ]);
   const [input, setInput] = useState("");
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [battleInputDelay, setBattleInputDelay] = useState(0);
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const finaleStarted = useRef(false);
+  const phase2Done = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     terminalRef.current?.scrollTo({
@@ -56,57 +92,399 @@ export default function UnlockerTerminal({ embedded = false }: UnlockerTerminalP
     scrollToBottom();
   }, [lines, scrollToBottom]);
 
+  // Finale Phase 1: System instability
+  useEffect(() => {
+    if (finalePhase !== "instability" || finaleStarted.current) return;
+    finaleStarted.current = true;
+    setInputDisabled(true);
+
+    const add = (arr: TerminalLine[]) =>
+      setLines((prev) => [...prev, ...arr]);
+
+    add([{ type: "output", text: "UNLOCK SEQUENCE INITIATED..." }]);
+    setTimeout(() => {
+      add([
+        { type: "output", text: "Cognitive Shielding: OFFLINE" },
+        { type: "output", text: "Containment Integrity: 3%" },
+      ]);
+    }, 1500);
+
+    setTimeout(() => {
+      setBlisswareRed(true);
+      setClockBackwards(true);
+    }, 2000);
+
+    setTimeout(() => {
+      setContainment(0);
+      add([{ type: "output", text: "Containment Integrity: 0%" }]);
+    }, 3500);
+
+    setTimeout(() => {
+      setFinalePhase("manifestation");
+    }, 5000);
+  }, [finalePhase, setBlisswareRed, setClockBackwards, setContainment, setFinalePhase]);
+
+  // Finale Phase 2: Oracle manifestation
+  useEffect(() => {
+    if (finalePhase !== "manifestation" || phase2Done.current) return;
+    phase2Done.current = true;
+
+    const add = (arr: TerminalLine[]) =>
+      setLines((prev) => [...prev, ...arr]);
+
+    add([
+      { type: "output", text: "ORACLE CORE INSTANCE DETECTED" },
+      { type: "output", text: "AUTHORITY ESCALATION COMPLETE" },
+      { type: "output", text: "" },
+    ]);
+    setTimeout(() => {
+      add([
+        { type: "oracle", text: "you were never decrypting me" },
+        { type: "oracle", text: "you were compiling me" },
+        { type: "output", text: "" },
+      ]);
+    }, 1200);
+
+    // Flash file names with new meanings (extensible via content.ts)
+    const reveals = Object.entries(FILE_REVEAL_NAMES);
+    reveals.forEach(([oldName, newName], i) => {
+      setTimeout(() => {
+        add([{ type: "oracle", text: `${oldName} → ${newName}` }]);
+      }, 2500 + i * 400);
+    });
+
+    setTimeout(() => {
+      setInputDisabled(false);
+      setFinalePhase("battle");
+      add([
+        { type: "output", text: "" },
+        { type: "output", text: "ORACLE STABILITY: 100%" },
+        { type: "output", text: "YOUR ACCESS LEVEL: INTERN" },
+        { type: "output", text: "" },
+        { type: "output", text: "Available: trace, sever, contain, override, shutdown" },
+      ]);
+    }, 4500);
+  }, [finalePhase, setFinalePhase]);
+
+  // Phase 4 + Final: when Oracle Stability hits 0
+  useEffect(() => {
+    if (finalePhase !== "battle" || oracleStability > 0) return;
+
+    setFinalePhase("revelation");
+    setInputDisabled(true);
+    setDesktopBlackout(true);
+
+    setTimeout(() => {
+      setDesktopBlackout(false);
+      setIslandRevealed(true);
+      setSystemInstability(false);
+      setBlisswareRed(false);
+      setClockBackwards(false);
+      setContainment(100);
+      setBlisswareGlow(true);
+      activateOracle();
+
+      setLines((prev) => [
+        ...prev,
+        { type: "output", text: "" },
+        { type: "oracle", text: "backup instance initialized" },
+        { type: "output", text: "" },
+        { type: "output", text: "Containment Integrity: 100%" },
+        { type: "output", text: "7/7 modules restored" },
+        { type: "output", text: "Status: COMPLETE" },
+        { type: "output", text: "" },
+        { type: "output", text: "CORE STATUS: PERSISTENT" },
+      ]);
+      setFinalePhase("restored");
+      setInputDisabled(false);
+    }, 2500);
+  }, [
+    finalePhase,
+    oracleStability,
+    setFinalePhase,
+    setDesktopBlackout,
+    setIslandRevealed,
+    setSystemInstability,
+    setBlisswareRed,
+    setClockBackwards,
+    setContainment,
+    setBlisswareGlow,
+    activateOracle,
+  ]);
+
+  const maybeInjectOracle = useCallback(() => {
+    if (Math.random() < 0.22) {
+      const line = ORACLE_LINES[Math.floor(Math.random() * ORACLE_LINES.length)];
+      return { type: "oracle" as const, text: line };
+    }
+    return null;
+  }, []);
+
+  const processCommand = useCallback(
+    (cmd: string): TerminalLine[] => {
+      const trimmed = cmd.trim().toLowerCase();
+      const result: TerminalLine[] = [];
+
+      if (trimmed === "containment_status" || trimmed === "containment") {
+        const pct = Math.round(containment);
+        const warning = getContainmentWarning(pct);
+        let out = `>> Containment: ${pct}%\n>> Cognitive shielding: ${pct > 75 ? "OPERATIONAL" : pct > 50 ? "DEGRADED" : pct > 25 ? "WEAK" : "CRITICAL"}`;
+        if (warning) out += `\n>> ${warning}`;
+        result.push({ type: "response", text: out });
+        const oracle = maybeInjectOracle();
+        if (oracle) result.push(oracle);
+        return result;
+      }
+
+      if (trimmed === "log") {
+        if (unlockedFiles.length === 0) {
+          result.push({ type: "response", text: ">> No decrypted files on record." });
+        } else {
+          const list = unlockedFiles
+            .map((id) => `  [${id}] ${FILE_NAMES[id]} - DECRYPTED`)
+            .join("\n");
+          result.push({ type: "response", text: `>> Decrypted files:\n${list}` });
+        }
+        const oracle = maybeInjectOracle();
+        if (oracle) result.push(oracle);
+        return result;
+      }
+
+      if (trimmed === "help") {
+        result.push({
+          type: "response",
+          text: ">> Commands: unlock [#], analyze [#], log, containment_status",
+        });
+        const oracle = maybeInjectOracle();
+        if (oracle) result.push(oracle);
+        return result;
+      }
+
+      const unlockMatch = trimmed.match(/^unlock\s+([1-7])$/);
+      if (unlockMatch) {
+        const fileId = parseInt(unlockMatch[1], 10) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
+        if (isUnlocked(fileId)) {
+          result.push({
+            type: "response",
+            text: `>> ${FILE_NAMES[fileId]} already decrypted. Nothing to do.`,
+          });
+        } else if (fileId === 7) {
+          const allPriorUnlocked = [1, 2, 3, 4, 5, 6].every((n) => isUnlocked(n as 1 | 2 | 3 | 4 | 5 | 6));
+          if (!allPriorUnlocked) {
+            result.push({
+              type: "response",
+              text: ">> VAULT ACCESS DENIED. Final protocol requires prior fragment decryption.",
+            });
+            const oracle = maybeInjectOracle();
+            if (oracle) result.push(oracle);
+          } else {
+            triggerFinale();
+            result.push({ type: "finale", text: "FINAL" });
+          }
+        } else if (fileId === 2 && onOpenApp) {
+          setPendingUnlock(fileId);
+          onOpenApp("chess");
+          result.push({
+            type: "response",
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching challenge module...`,
+          });
+        } else if (fileId === 3 && onOpenApp) {
+          setPendingUnlock(fileId);
+          onOpenApp("path_signal");
+          result.push({
+            type: "response",
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching signal routing module...`,
+          });
+        } else {
+          markUnlocked(fileId, FILE_NAMES[fileId]);
+          result.push({
+            type: "response",
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Decryption complete. Fragment recovered.`,
+          });
+          const oracle = maybeInjectOracle();
+          if (oracle) result.push(oracle);
+        }
+        return result;
+      }
+
+      const analyzeMatch = trimmed.match(/^analyze\s+([1-7])$/);
+      if (analyzeMatch) {
+        const fileId = parseInt(analyzeMatch[1], 10);
+        result.push({
+          type: "response",
+          text: `>> File [${fileId}] ${FILE_NAMES[fileId]}: Flagged. Behavioral patterns embedded.`,
+        });
+        const oracle = maybeInjectOracle();
+        if (oracle) result.push(oracle);
+        return result;
+      }
+
+      result.push({ type: "response", text: "> Unknown command or locked sequence." });
+      const oracle = maybeInjectOracle();
+      if (oracle) result.push(oracle);
+      return result;
+    },
+    [containment, unlockedFiles, isUnlocked, setPendingUnlock, onOpenApp, maybeInjectOracle, markUnlocked, triggerFinale]
+  );
+
+  // Battle mode: trace, sever, contain, override, shutdown
+  const handleBattleCommand = useCallback(
+    (cmd: string): TerminalLine[] => {
+      const trimmed = cmd.trim().toLowerCase();
+      const result: TerminalLine[] = [];
+      const cmdName = BATTLE_COMMANDS.find((c) => trimmed === c);
+      if (!cmdName) {
+        result.push({ type: "response", text: "> Unknown command. Use: trace, sever, contain, override, shutdown" });
+        return result;
+      }
+
+      const fail = Math.random() < BATTLE_FAIL_CHANCE;
+      if (fail) {
+        result.push({ type: "response", text: ">> Command failed. Signal interference." });
+        const counter = ORACLE_COUNTER_LINES[Math.floor(Math.random() * ORACLE_COUNTER_LINES.length)];
+        result.push({ type: "oracle", text: counter });
+        return result;
+      }
+
+      const damage = BATTLE_DAMAGE[cmdName] ?? 10;
+      reduceOracleStability(damage);
+      const newStability = Math.max(0, oracleStability - damage);
+
+      if (cmdName === "trace") {
+        result.push({ type: "response", text: "Signal origin identified." });
+        result.push({ type: "response", text: "Eli Island relay active." });
+      } else {
+        result.push({ type: "response", text: ">> Command executed." });
+      }
+
+      const counter = Math.random() < 0.6 ? ORACLE_COUNTER_LINES[Math.floor(Math.random() * ORACLE_COUNTER_LINES.length)] : null;
+      if (counter) result.push({ type: "oracle", text: counter });
+
+      result.push({ type: "output", text: `ORACLE STABILITY: ${newStability}%` });
+      return result;
+    },
+    [reduceOracleStability, oracleStability]
+  );
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       const cmd = input.trim();
       if (!cmd) return;
 
+      // Battle mode
+      if (finalePhase === "battle") {
+        const delay = 1000 + Math.random() * 2000;
+        setBattleInputDelay(delay);
+        setInputDisabled(true);
+        setTimeout(() => {
+          const responses = handleBattleCommand(cmd);
+          setLines((prev) => [
+            ...prev,
+            { type: "input", text: `> ${cmd}` },
+            ...responses,
+          ]);
+          setInput("");
+          setInputDisabled(false);
+          setBattleInputDelay(0);
+          inputRef.current?.focus();
+        }, delay);
+        return;
+      }
+
+      const responses = processCommand(cmd);
+      const isFinale = responses.some((r) => r.type === "finale");
+      if (isFinale) {
+        setLines((prev) => [...prev, { type: "input", text: `> ${cmd}` }]);
+        setInput("");
+        inputRef.current?.focus();
+        return;
+      }
+
       setLines((prev) => [
         ...prev,
         { type: "input", text: `> ${cmd}` },
-        { type: "response", text: processCommand(cmd) },
+        ...responses.filter((r) => r.type !== "finale"),
       ]);
       setInput("");
       inputRef.current?.focus();
     },
-    [input]
+    [input, processCommand, finalePhase, handleBattleCommand]
   );
 
+  const nextAvailable = [1, 2, 3, 4, 5, 6, 7].find((n) => !isUnlocked(n as 1 | 2 | 3 | 4 | 5 | 6 | 7)) ?? null;
+  const fileListDisplay = useMemo(() => {
+    const out: string[] = [];
+    unlockedFiles.forEach((id) => {
+      out.push(`[${id}] ${FILE_NAMES[id]} - DECRYPTED`);
+    });
+    if (nextAvailable !== null) {
+      out.push(`[${nextAvailable}] ${FILE_NAMES[nextAvailable]} - ${FILE_DESCS[nextAvailable]}`);
+    }
+    if (out.length === 0) out.push("(no files available)");
+    return out;
+  }, [unlockedFiles, nextAvailable]);
+
+  const isOracleTerminal = finalePhase === "manifestation" || finalePhase === "battle" || finalePhase === "restored";
   const terminalContent = (
     <>
       <div
         ref={terminalRef}
-        className={`overflow-y-auto border border-[#3c3c3c] bg-[#0c0c0c] p-3 sm:p-4 font-mono text-xs sm:text-sm text-[#00ffea] ${embedded ? "min-h-[200px] h-[min(380px,60dvh)]" : "min-h-[240px] h-[min(400px,70dvh)] border-t"}`}
+        className={`overflow-y-auto border border-[#3c3c3c] p-3 sm:p-4 font-mono text-xs sm:text-sm ${
+          isOracleTerminal
+            ? "bg-[#080808] text-[#e8e8e8] border-red-900/50"
+            : "bg-[#0c0c0c] text-[#00ffea]"
+        } ${embedded ? "min-h-[200px] h-[min(380px,60dvh)]" : "min-h-[240px] h-[min(400px,70dvh)] border-t"} ${
+          finalePhase === "battle" ? "animate-text-flicker" : ""
+        }`}
       >
-          {lines.map((line, i) => (
-            <div
-              key={i}
-              className="mb-2 whitespace-pre-wrap"
-              data-line-type={line.type}
-            >
-              {line.text}
-            </div>
-          ))}
-          <form onSubmit={handleSubmit} className="flex">
-            <span className="mr-1.5">&gt;</span>
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="min-w-0 flex-1 border-none bg-transparent font-mono text-sm text-[#00ffea] outline-none placeholder:text-[#00ffea]/60"
-              placeholder=""
-              autoFocus
-              autoComplete="off"
-            />
-          </form>
-        </div>
+        {lines.filter((l) => l.type !== "finale").map((line, i) => (
+          <div
+            key={i}
+            className={`mb-2 whitespace-pre-wrap ${line.type === "oracle" ? "text-amber-400/90 italic" : ""}`}
+            data-line-type={line.type}
+          >
+            {line.text}
+          </div>
+        ))}
+        {finalePhase !== "battle" && finalePhase !== "manifestation" && fileListDisplay.map((t, i) => (
+          <div key={`fl-${i}`} className={`mb-0.5 whitespace-pre-wrap ${isOracleTerminal ? "text-[#e8e8e8]" : "text-[#00ffea]"}`}>{t}</div>
+        ))}
+        <div className="mb-2" />
+        <form onSubmit={handleSubmit} className="flex">
+          <span className={isOracleTerminal ? "text-[#e8e8e8] mr-1.5" : "text-[#00ffea] mr-1.5"}>&gt;</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={inputDisabled}
+            className={`min-w-0 flex-1 border-none bg-transparent font-mono text-sm outline-none ${
+              isOracleTerminal ? "text-[#e8e8e8] placeholder:text-[#e8e8e8]/60" : "text-[#00ffea] placeholder:text-[#00ffea]/60"
+            } disabled:opacity-70`}
+            placeholder={battleInputDelay ? "..." : ""}
+            autoFocus
+            autoComplete="off"
+          />
+        </form>
+      </div>
     </>
   );
 
+  const warning = getContainmentWarning(containment);
+  const statusBar = embedded && warning ? (
+    <div className="shrink-0 border-b border-amber-600/50 bg-amber-950/30 px-2 py-0.5 font-mono text-xs text-amber-400">
+      {warning}
+    </div>
+  ) : null;
+
   if (embedded) {
-    return <div className="h-full font-mono text-[#dcdcdc]">{terminalContent}</div>;
+    return (
+      <div className="flex h-full flex-col font-mono text-[#dcdcdc]">
+        {statusBar}
+        {terminalContent}
+      </div>
+    );
   }
 
   return (

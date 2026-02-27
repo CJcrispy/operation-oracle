@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 
 type Win98WindowProps = {
   id: string;
@@ -9,6 +9,7 @@ type Win98WindowProps = {
   onClose: (id: string) => void;
   onMinimize?: (id: string) => void;
   onFocus?: (id: string) => void;
+  onPositionChange?: (id: string, x: number, y: number) => void;
   isMinimized?: boolean;
   isFocused?: boolean;
   defaultWidth?: number;
@@ -23,6 +24,7 @@ export default function Win98Window({
   onClose,
   onMinimize,
   onFocus,
+  onPositionChange,
   isMinimized = false,
   isFocused = true,
   defaultWidth = 600,
@@ -30,6 +32,40 @@ export default function Win98Window({
   className = "",
 }: Win98WindowProps) {
   const handleFocus = useCallback(() => onFocus?.(id), [id, onFocus]);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
+
+  const handleTitleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.button !== 0 || !onPositionChange) return;
+      e.preventDefault();
+      const el = document.getElementById(`win98-${id}`);
+      const rect = el?.getBoundingClientRect();
+      if (!rect) return;
+      setIsDragging(true);
+      dragStartRef.current = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+    },
+    [id, onPositionChange]
+  );
+
+  useEffect(() => {
+    if (!isDragging || !onPositionChange) return;
+    const onMove = (e: MouseEvent) => {
+      const nx = Math.max(0, e.clientX - dragStartRef.current.x);
+      const ny = Math.max(0, e.clientY - dragStartRef.current.y);
+      onPositionChange(id, Math.round(nx), Math.round(ny));
+    };
+    const onUp = () => setIsDragging(false);
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+  }, [isDragging, id, onPositionChange]);
 
   if (isMinimized) {
     return null;
@@ -37,11 +73,12 @@ export default function Win98Window({
 
   return (
     <div
+      id={`win98-${id}`}
       role="button"
       tabIndex={0}
       onClick={handleFocus}
       onFocus={handleFocus}
-      className={`absolute flex flex-col border-2 border-black bg-[#c0c0c0] shadow-[2px_2px_0_#404040] ${className}`}
+      className={`absolute flex flex-col border-2 border-black bg-[#c0c0c0] shadow-[2px_2px_0_#404040] ${isDragging ? "cursor-grabbing" : ""} ${className}`}
       style={{
         width: defaultWidth,
         minWidth: 280,
@@ -55,10 +92,14 @@ export default function Win98Window({
           : "2px 2px 0 #404040",
       }}
     >
-      {/* Title bar */}
-      <div className="flex min-h-[28px] shrink-0 items-center justify-between bg-[#000080] px-1 py-0.5 text-white">
+      {/* Title bar - draggable */}
+      <div
+        role="presentation"
+        onMouseDown={handleTitleMouseDown}
+        className={`flex min-h-[28px] shrink-0 cursor-grab items-center justify-between bg-[#000080] px-1 py-0.5 text-white active:cursor-grabbing ${!onPositionChange ? "cursor-default" : ""}`}
+      >
         <span className="truncate text-xs sm:text-sm font-bold">{title}</span>
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
           {onMinimize && (
             <button
               type="button"

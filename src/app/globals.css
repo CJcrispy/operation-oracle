@@ -40,6 +40,66 @@ body {
   animation: blink 1s steps(2, start) infinite;
 }
 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes taskbar-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.animate-taskbar-flicker {
+  animation: taskbar-flicker 0.15s ease-in-out infinite;
+}
+
+@keyframes icon-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-icon-flicker {
+  animation: icon-flicker 0.2s ease-in-out infinite;
+}
+
+@keyframes blissware-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+  50% { opacity: 0.9; box-shadow: 0 0 8px 2px rgba(220, 38, 38, 0.6); }
+}
+.animate-blissware-pulse {
+  animation: blissware-pulse 1s ease-in-out infinite;
+}
+
+@keyframes blissware-glow {
+  0%, 100% { box-shadow: 0 0 2px 0 rgba(220, 38, 38, 0.3); }
+  50% { box-shadow: 0 0 6px 2px rgba(220, 38, 38, 0.5); }
+}
+.animate-blissware-glow {
+  animation: blissware-glow 2s ease-in-out infinite;
+}
+
+@keyframes text-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-text-flicker {
+  animation: text-flicker 0.1s ease-in-out infinite;
+}
+
+@keyframes glitch-bg {
+  0%, 100% { filter: none; }
+  20% { filter: hue-rotate(5deg) contrast(1.02); }
+  40% { filter: hue-rotate(-3deg) contrast(0.98); }
+  60% { filter: hue-rotate(2deg) contrast(1.01); }
+  80% { filter: hue-rotate(-2deg); }
+}
+.animate-glitch-bg {
+  animation: glitch-bg 0.3s ease-in-out;
+}
+
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
