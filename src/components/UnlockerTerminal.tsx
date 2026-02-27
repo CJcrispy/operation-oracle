@@ -2,19 +2,16 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useGame } from "@/context/GameContext";
-import { FILE_NAMES, FILE_REVEAL_NAMES, ORACLE_COUNTER_LINES } from "@/lib/content";
-
-const BATTLE_COMMANDS = ["trace", "sever", "contain", "override", "shutdown"] as const;
-const BATTLE_DAMAGE: Record<string, number> = {
-  trace: 8,
-  sever: 15,
-  contain: 12,
-  override: 20,
-  shutdown: 25,
-};
-const BATTLE_FAIL_CHANCE = 0.2; // 20% random fail
-const ORACLE_COUNTER_ATTACK_CHANCE = 0.35; // 35% chance Oracle fights back
-const ORACLE_COUNTER_AMOUNT = { min: 8, max: 18 }; // Restore 8-18% stability
+import {
+  FILE_NAMES,
+  FILE_REVEAL_NAMES,
+  ORACLE_COUNTER_LINES,
+  BATTLE_COMMANDS,
+  BATTLE_DAMAGE,
+  BATTLE_FAIL_CHANCE,
+  ORACLE_COUNTER_ATTACK_CHANCE,
+  ORACLE_COUNTER_AMOUNT,
+} from "@/lib/content"; // Restore 8-18% stability
 
 const ORACLE_LINES = [
   "// you are not authorized to view that fragment.",
@@ -34,7 +31,7 @@ function getContainmentWarning(pct: number): string {
 
 type TerminalLine = { type: "output" | "input" | "response" | "oracle" | "finale"; text: string };
 
-type UnlockerTerminalProps = { embedded?: boolean; onOpenApp?: (app: "chess" | "path_signal" | "slime2" | "uncledonk") => void };
+type UnlockerTerminalProps = { embedded?: boolean; onOpenApp?: (app: "slider_puzzle" | "chess" | "path_signal" | "breakout" | "uncledonk") => void };
 
 export default function UnlockerTerminal({ embedded = false, onOpenApp }: UnlockerTerminalProps) {
   const {
@@ -60,13 +57,13 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
     setSystemInstability,
   } = useGame();
   const FILE_DESCS: Record<number, string> = {
-    1: "Encrypted - Behavioral Ghosts",
-    2: "Flagged - UI Injection",
-    3: "Encoded - Signal Embed",
-    4: "Masked - Identity Interference",
-    5: "Network - Spreading Node Active",
-    6: "Fragmented - Cult Doctrine",
-    7: "Vaulted - Final Protocol",
+    1: "Archived - Oracle Core Split",
+    2: "Restricted - Clone Initiative Phase 3",
+    3: "Raw - Friend Replication Logs",
+    4: "Internal - Cardholder Acquisitions",
+    5: "Classified - Island Coordinates",
+    6: "Devotional - Alioojah Protocol",
+    7: "Executive - Global Outreach Roadmap",
   };
   const [lines, setLines] = useState<TerminalLine[]>(() => [
     { type: "output", text: "UNLOCKER.sys [v0.72 - ECTH Distro]" },
@@ -158,6 +155,10 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
       }, 2500 + i * 400);
     });
 
+    // 5 seconds after final Oracle message before battle transition
+    const lastOracleMs = 2500 + (reveals.length - 1) * 400;
+    const transitionMs = lastOracleMs + 5000;
+
     setTimeout(() => {
       setInputDisabled(false);
       setFinalePhase("battle");
@@ -172,7 +173,7 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
         { type: "output", text: "" },
         { type: "output", text: "Commands: trace, sever, contain, override, shutdown" },
       ]);
-    }, 4500);
+    }, transitionMs);
   }, [finalePhase, setFinalePhase]);
 
   // Phase 4 + Final: when Oracle Stability hits 0 (player wins)
@@ -233,8 +234,53 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
 
   const processCommand = useCallback(
     (cmd: string): TerminalLine[] => {
-      const trimmed = cmd.trim().toLowerCase();
+      const trimmed = typeof cmd === "string" ? cmd.trim().toLowerCase() : "";
+      if (!trimmed) {
+        return [{ type: "response", text: ">> " }];
+      }
       const result: TerminalLine[] = [];
+
+      // GM / dev cheat commands — not documented, not in help
+      if (trimmed.startsWith("gm ")) {
+        const rest = trimmed.slice(3).trim();
+        if (rest === "unlockall") {
+          [1, 2, 3, 4, 5, 6].forEach((id) => {
+            if (!unlockedFiles.includes(id as 1 | 2 | 3 | 4 | 5 | 6)) {
+              markUnlocked(id as 1 | 2 | 3 | 4 | 5 | 6, FILE_NAMES[id]);
+            }
+          });
+          result.push({ type: "response", text: ">> GM: All files 1–6 decrypted." });
+          return result;
+        }
+        if (rest === "finale") {
+          triggerFinale();
+          result.push({ type: "finale", text: "FINAL" });
+          return result;
+        }
+        const openMatch = rest.match(/^open\s+([1-6])$/);
+        if (openMatch && onOpenApp) {
+          const id = parseInt(openMatch[1], 10) as 1 | 2 | 3 | 4 | 5 | 6;
+          const appMap = { 1: "slider_puzzle" as const, 2: "chess" as const, 3: "path_signal" as const, 5: "breakout" as const, 6: "uncledonk" as const };
+          const app = appMap[id as keyof typeof appMap];
+          if (app) {
+            setPendingUnlock(id);
+            onOpenApp(app);
+            result.push({ type: "response", text: `>> GM: Opening ${FILE_NAMES[id]} challenge.` });
+          } else {
+            result.push({ type: "response", text: ">> GM: File 4 has no puzzle." });
+          }
+          return result;
+        }
+        if (rest === "help") {
+          result.push({
+            type: "response",
+            text: ">> GM: unlockall | finale | open [1-6]",
+          });
+          return result;
+        }
+        result.push({ type: "response", text: ">> GM: Unknown. Try gm help" });
+        return result;
+      }
 
       if (trimmed === "containment_status" || trimmed === "containment") {
         const pct = Math.round(containment);
@@ -252,7 +298,7 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
           result.push({ type: "response", text: ">> No decrypted files on record." });
         } else {
           const list = unlockedFiles
-            .map((id) => `  [${id}] ${FILE_NAMES[id]} - DECRYPTED`)
+            .map((id) => `  [${id}] ${FILE_NAMES[id] ?? `File ${id}`} - DECRYPTED`)
             .join("\n");
           result.push({ type: "response", text: `>> Decrypted files:\n${list}` });
         }
@@ -273,13 +319,40 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
 
       const unlockMatch = trimmed.match(/^unlock\s+([1-7])$/);
       if (unlockMatch) {
-        const fileId = parseInt(unlockMatch[1], 10) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
+        const raw = parseInt(unlockMatch[1], 10);
+        const fileId = raw >= 1 && raw <= 7 ? (raw as 1 | 2 | 3 | 4 | 5 | 6 | 7) : null;
+        if (!fileId) {
+          result.push({ type: "response", text: ">> Invalid file ID." });
+          return result;
+        }
         if (isUnlocked(fileId)) {
           result.push({
             type: "response",
-            text: `>> ${FILE_NAMES[fileId]} already decrypted. Nothing to do.`,
+            text: `>> ${FILE_NAMES[fileId] ?? `File ${fileId}`} already decrypted. Nothing to do.`,
           });
-        } else if (fileId === 7) {
+          const oracle = maybeInjectOracle();
+          if (oracle) result.push(oracle);
+          return result;
+        }
+        if (fileId > 1) {
+          const missing = [];
+          for (let n = 1; n < fileId; n++) {
+            if (!isUnlocked(n as 1 | 2 | 3 | 4 | 5 | 6)) missing.push(n);
+          }
+          if (missing.length > 0) {
+            const hint = missing.length === 1
+              ? `Unlock file ${missing[0]} first.`
+              : `Decrypt files 1 through ${fileId - 1} first.`;
+            result.push({
+              type: "response",
+              text: `>> Sequential decryption required. ${hint}`,
+            });
+            const oracle = maybeInjectOracle();
+            if (oracle) result.push(oracle);
+            return result;
+          }
+        }
+        if (fileId === 7) {
           const allPriorUnlocked = [1, 2, 3, 4, 5, 6].every((n) => isUnlocked(n as 1 | 2 | 3 | 4 | 5 | 6));
           if (!allPriorUnlocked) {
             result.push({
@@ -292,6 +365,13 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
             triggerFinale();
             result.push({ type: "finale", text: "FINAL" });
           }
+        } else if (fileId === 1 && onOpenApp) {
+          setPendingUnlock(fileId);
+          onOpenApp("slider_puzzle");
+          result.push({
+            type: "response",
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching tile alignment module...`,
+          });
         } else if (fileId === 2 && onOpenApp) {
           setPendingUnlock(fileId);
           onOpenApp("chess");
@@ -308,10 +388,10 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
           });
         } else if (fileId === 5 && onOpenApp) {
           setPendingUnlock(fileId);
-          onOpenApp("slime2");
+          onOpenApp("breakout");
           result.push({
             type: "response",
-            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching network infection simulator...`,
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching brick breaker module...`,
           });
         } else if (fileId === 6 && onOpenApp) {
           setPendingUnlock(fileId);
@@ -334,11 +414,16 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
 
       const analyzeMatch = trimmed.match(/^analyze\s+([1-7])$/);
       if (analyzeMatch) {
-        const fileId = parseInt(analyzeMatch[1], 10);
-        result.push({
-          type: "response",
-          text: `>> File [${fileId}] ${FILE_NAMES[fileId]}: Flagged. Behavioral patterns embedded.`,
-        });
+        const raw = parseInt(analyzeMatch[1], 10);
+        const fileId = raw >= 1 && raw <= 7 ? raw : null;
+        if (fileId) {
+          result.push({
+            type: "response",
+            text: `>> File [${fileId}] ${FILE_NAMES[fileId] ?? `File ${fileId}`}: Flagged. Behavioral patterns embedded.`,
+          });
+        } else {
+          result.push({ type: "response", text: ">> Invalid file ID." });
+        }
         const oracle = maybeInjectOracle();
         if (oracle) result.push(oracle);
         return result;
@@ -355,7 +440,7 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
   // Battle mode: trace, sever, contain, override, shutdown (Oracle fights back like JRPG)
   const handleBattleCommand = useCallback(
     (cmd: string): { lines: TerminalLine[]; isLose: boolean } => {
-      const trimmed = cmd.trim().toLowerCase();
+      const trimmed = typeof cmd === "string" ? cmd.trim().toLowerCase() : "";
       const result: TerminalLine[] = [];
       const cmdName = BATTLE_COMMANDS.find((c) => trimmed === c);
       if (!cmdName) {

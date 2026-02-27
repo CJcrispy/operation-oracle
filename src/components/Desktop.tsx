@@ -51,20 +51,22 @@ import Win98Window from "./Win98Window";
 import UnlockerTerminal from "./UnlockerTerminal";
 import PathSignalGame from "./PathSignalGame";
 import ChessGame from "./ChessGame";
-import Slime2Game from "./Slime2Game";
+import BreakoutGame from "./BreakoutGame";
+import SliderPuzzle from "./SliderPuzzle";
 import UncledonkGame from "./UncledonkGame";
 import OracleSourceViewer from "./OracleSourceViewer";
 import Explorer from "./Explorer";
 import OracleConfrontation from "./OracleConfrontation";
+import FinaleBattleScreen from "./FinaleBattleScreen";
 import NotificationToast from "./NotificationToast";
 import Notepad from "./Notepad";
-import MyComputer from "./MyComputer";
+import CloneDatabaseViewer from "./CloneDatabaseViewer";
 import RecycleBin from "./RecycleBin";
 import WelcomeViewer from "./WelcomeViewer";
 import { useGame } from "@/context/GameContext";
 import { RESIGNATION_LETTER } from "@/lib/content";
 
-export type AppId = "unlocker" | "path_signal" | "chess" | "test" | "explorer" | "notepad" | "my_computer" | "recycle_bin" | "welcome" | "slime2" | "uncledonk";
+export type AppId = "unlocker" | "path_signal" | "chess" | "test" | "explorer" | "notepad" | "clones" | "recycle_bin" | "welcome" | "breakout" | "uncledonk" | "slider_puzzle";
 
 type WindowState = {
   id: string;
@@ -79,12 +81,13 @@ const APP_TITLES: Record<string, string> = {
   unlocker: "UNLOCKER.sys - Windows 98 Terminal Shell",
   path_signal: "ORACLE Challenge - path_signal.exe",
   chess: "ORACLE Challenge - chess.exe",
-  slime2: "ORACLE Challenge - SLIME2.HTML",
+  breakout: "ORACLE Challenge - BRICK_BREAKER.EXE",
   uncledonk: "ORACLE Challenge - UNCLEDONK.PPT",
+  slider_puzzle: "ORACLE Challenge - TILE_ALIGN.exe",
   test: "ORACLE Source Viewer - oracle_source.exe",
   explorer: "Documents - Windows Explorer",
   notepad: "Untitled - Notepad",
-  my_computer: "My Computer",
+  clones: "Clone Intel Database - clones.json",
   recycle_bin: "Recycle Bin",
   welcome: "Welcome.pdf - Adobe Acrobat Reader",
 };
@@ -93,12 +96,13 @@ const WINDOW_SIZES: Record<string, { width: number; height: number }> = {
   unlocker: { width: 720, height: 480 },
   path_signal: { width: 380, height: 420 },
   chess: { width: 440, height: 480 },
-  slime2: { width: 400, height: 420 },
+  breakout: { width: 540, height: 520 },
   uncledonk: { width: 500, height: 420 },
+  slider_puzzle: { width: 420, height: 520 },
   test: { width: 720, height: 480 },
   explorer: { width: 480, height: 360 },
   notepad: { width: 500, height: 400 },
-  my_computer: { width: 520, height: 380 },
+  clones: { width: 560, height: 480 },
   recycle_bin: { width: 400, height: 320 },
   welcome: { width: 560, height: 480 },
 };
@@ -117,6 +121,7 @@ export default function Desktop() {
     clockBackwards,
     desktopBlackout,
     islandRevealed,
+    isUnlocked,
   } = useGame();
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [startMenuOpen, setStartMenuOpen] = useState(false);
@@ -252,10 +257,12 @@ export default function Desktop() {
         );
       case "path_signal":
         return <PathSignalGame />;
+      case "slider_puzzle":
+        return <SliderPuzzle />;
       case "chess":
         return <ChessGame />;
-      case "slime2":
-        return <Slime2Game />;
+      case "breakout":
+        return <BreakoutGame />;
       case "uncledonk":
         return <UncledonkGame />;
       case "test":
@@ -264,15 +271,20 @@ export default function Desktop() {
         return (
           <Explorer
             onOpenNotepad={(fn, c) => openApp("notepad", { filename: fn, content: c })}
+            onOpenCloneDb={() => openApp("clones")}
             initialPath={win.params?.explorerPath as string[] | undefined}
           />
         );
       case "notepad":
         return <Notepad filename={win.params?.filename ?? "Untitled"} content={win.params?.content ?? ""} />;
-      case "my_computer":
-        return <MyComputer />;
+      case "clones":
+        return <CloneDatabaseViewer />;
       case "recycle_bin":
-        return <RecycleBin />;
+        return (
+          <RecycleBin
+            onOpenNotepad={(fn, c) => openApp("notepad", { filename: fn, content: c })}
+          />
+        );
       case "welcome":
         return <WelcomeViewer />;
       default:
@@ -285,7 +297,7 @@ export default function Desktop() {
   useEffect(() => {
     if (islandRevealed && !islandOpened.current) {
       islandOpened.current = true;
-      openApp("explorer", { explorerPath: ["SYS", "Legacy", "Island"] });
+      openApp("explorer", { explorerPath: ["Documents", "SYS", "Legacy", "Island"] });
     }
   }, [islandRevealed, openApp]);
 
@@ -336,15 +348,17 @@ export default function Desktop() {
             <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">📁</span>
             <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">Documents</span>
           </button>
-          <button
-            type="button"
-            onClick={() => openApp("my_computer")}
-            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
-            title="My Computer"
-          >
-            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">💻</span>
-            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">My Computer</span>
-          </button>
+          {isUnlocked(5) && (
+            <button
+              type="button"
+              onClick={() => openApp("breakout")}
+              className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
+              title="BRICK_BREAKER.EXE"
+            >
+              <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#0c0c0c] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">🕹</span>
+              <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">BRICK_BREAKER.EXE</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => openApp("recycle_bin")}
@@ -461,6 +475,18 @@ export default function Desktop() {
                       Welcome.pdf
                     </button>
                   </li>
+                  {isUnlocked(5) && (
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => { setStartMenuOpen(false); openApp("breakout"); }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-black hover:bg-[#000080] hover:text-white"
+                      >
+                        <span className="h-6 w-6 shrink-0 border border-[#808080] bg-[#c0c0c0]" />
+                        BRICK_BREAKER.EXE
+                      </button>
+                    </li>
+                  )}
                   <li className="border-t border-[#808080]">
                     <button
                       type="button"
@@ -506,7 +532,7 @@ export default function Desktop() {
                   : "bg-[#c0c0c0] hover:bg-[#e0e0e0] active:bg-[#e0e0e0]"
               }`}
             >
-              {win.title.slice(0, 12)}…
+              {(win.title ?? "Window").slice(0, 12)}…
             </button>
           ))}
         </div>
@@ -517,6 +543,7 @@ export default function Desktop() {
           </div>
         </div>
       </div>
+      {finalePhase === "battle" && <FinaleBattleScreen />}
       {(oracleActivated || finaleOutcome === "lose") && <OracleConfrontation outcome={finaleOutcome === "lose" ? "lose" : "win"} />}
       {/* Desktop blackout during Phase 4 revelation */}
       {desktopBlackout && (

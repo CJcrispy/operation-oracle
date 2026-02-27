@@ -79,7 +79,7 @@ export default function UncledonkGame() {
                 key={i}
                 type="button"
                 onClick={() => handleChoice(i)}
-                className="px-4 py-2 border-2 border-[#808080] bg-[#e0e0e0] text-sm hover:bg-[#c0c0c0] active:border-black"
+                className="px-4 py-2 border-2 border-[#808080] bg-[#e0e0e0] text-sm text-black hover:bg-[#c0c0c0] active:border-black"
               >
                 {opt}
               </button>

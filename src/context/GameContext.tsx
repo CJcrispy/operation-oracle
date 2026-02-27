@@ -14,13 +14,13 @@ import {
 export const FILE_IDS = [1, 2, 3, 4, 5, 6, 7] as const;
 export type FileId = (typeof FILE_IDS)[number];
 
-/** Which app to open for each file unlock (File 2 → chess, File 3 → path_signal, etc.) */
-export const FILE_TO_APP: Record<FileId, "chess" | "path_signal" | "slime2" | "uncledonk" | null> = {
-  1: null, // direct / no puzzle
+/** Which app to open for each file unlock (File 1 → slider_puzzle, File 2 → chess, etc.) */
+export const FILE_TO_APP: Record<FileId, "slider_puzzle" | "chess" | "path_signal" | "breakout" | "uncledonk" | null> = {
+  1: "slider_puzzle",
   2: "chess",
   3: "path_signal",
   4: null,
-  5: "slime2",
+  5: "breakout",
   6: "uncledonk",
   7: null, // final - special handling
 };
@@ -46,6 +46,7 @@ export type GameState = {
   /** Finale sequence state */
   finalePhase: FinalePhase;
   oracleStability: number;
+  playerHealth: number;
   systemInstability: boolean;
   blisswareRed: boolean;
   blisswareGlow: boolean;
@@ -77,6 +78,8 @@ export type GameContextValue = GameState & {
   setFinalePhase: (p: FinalePhase) => void;
   reduceOracleStability: (amount: number) => void;
   increaseOracleStability: (amount: number) => void;
+  reducePlayerHealth: (amount: number) => void;
+  increasePlayerHealth: (amount: number) => void;
   finaleOutcome: "win" | "lose" | null;
   setFinaleOutcome: (o: "win" | "lose" | null) => void;
   setContainment: (n: number) => void;
@@ -99,6 +102,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [oracleActivated, setOracleActivated] = useState(false);
   const [finalePhase, setFinalePhaseState] = useState<FinalePhase>("idle");
   const [oracleStability, setOracleStability] = useState(100);
+  const [playerHealth, setPlayerHealth] = useState(100);
   const [finaleOutcome, setFinaleOutcome] = useState<"win" | "lose" | null>(null);
   const [systemInstability, setSystemInstability] = useState(false);
   const [blisswareRed, setBlisswareRed] = useState(false);
@@ -139,6 +143,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!already) {
       setContainment((prev) => Math.max(0, prev - CONTAINMENT_DROP_PER_FILE));
       addNotification(`File decrypted: ${fileName ?? `File ${fileId}`}`);
+      setRequestedDocId(`f${fileId}` as DocId);
     }
   }, [unlockedFiles, addNotification]);
 
@@ -162,6 +167,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setOracleStability((prev) => Math.min(100, prev + amount));
   }, []);
 
+  const reducePlayerHealth = useCallback((amount: number) => {
+    setPlayerHealth((prev) => Math.max(0, prev - amount));
+  }, []);
+
+  const increasePlayerHealth = useCallback((amount: number) => {
+    setPlayerHealth((prev) => Math.min(100, prev + amount));
+  }, []);
+
   const addFinaleLines = useCallback((_lines: string[]) => {
     // Used by UnlockerTerminal to append lines - passed via callback
   }, []);
@@ -169,6 +182,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const triggerFinale = useCallback(() => {
     setFinalePhaseState("instability");
     setFinaleOutcome(null);
+    setPlayerHealth(100);
     setUnlockedFiles((prev) => (prev.includes(7) ? prev : ([...prev, 7].sort((a, b) => a - b) as (1 | 2 | 3 | 4 | 5 | 6 | 7)[])));
     setContainment(3);
     setSystemInstability(true);
@@ -194,6 +208,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dismissNotification,
       finalePhase,
       oracleStability,
+      playerHealth,
       systemInstability,
       blisswareRed,
       blisswareGlow,
@@ -204,6 +219,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setFinalePhase,
       reduceOracleStability,
       increaseOracleStability,
+      reducePlayerHealth,
+      increasePlayerHealth,
       finaleOutcome,
       setFinaleOutcome,
       addFinaleLines,
@@ -234,6 +251,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dismissNotification,
       finalePhase,
       oracleStability,
+      playerHealth,
       systemInstability,
       blisswareRed,
       blisswareGlow,
@@ -244,6 +262,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setFinalePhase,
       reduceOracleStability,
       increaseOracleStability,
+      reducePlayerHealth,
+      increasePlayerHealth,
       finaleOutcome,
       addFinaleLines,
       setFinaleOutcome,

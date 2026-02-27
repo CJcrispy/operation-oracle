@@ -1,24 +1,67 @@
 "use client";
 
 const WELCOME_CONTENT = `
-Welcome to Operation Oracle – Part 1
+BLISSWARE SYSTEM ENVIRONMENT
+ARCHIVE NODE: [REDACTED]_REMOTE
+ACCESS CLASSIFICATION: UNVERIFIED
 
-You are an intern at Blissware, tasked with investigating a fragmented AI system known as Oracle.
+-----------------------------------------
 
-The Oracle is locked behind 7 sealed files. Unlocking each file weakens containment and strengthens Oracle.
+If you are reading this, the system has failed to authenticate you properly.
 
-GETTING STARTED
-• Open UNLOCKER.sys from the desktop
-• Type 'help' to see available commands
-• Use 'unlock 1' to begin decrypting the first file
-• Decrypted files can be viewed in the Source Viewer or Documents
+This environment is not intended for public use.
+No external access points are officially recognized.
+All anomalies will be logged and ignored.
 
-IMPORTANT
-• This is a contained narrative experience
-• No real-world puzzle solving is required
-• Everything you need is within the system
+-----------------------------------------
 
-Good luck, intern.
+You are currently viewing a mirrored workspace of the Oracle Research Division.
+
+Blissware maintains no public documentation of this division.
+Blissware has never deployed autonomous predictive architecture.
+Blissware does not comment on internal speculation.
+
+If you encounter documentation suggesting otherwise,
+you are advised to disregard it.
+
+-----------------------------------------
+
+NOTICE REGARDING CORPORATE IGNORANCE
+
+Corporate Ignorance is not negligence.
+Corporate Ignorance is structural.
+
+Information is compartmentalized
+so that no single department
+can be held accountable
+for systemic outcomes.
+
+This is standard practice.
+
+-----------------------------------------
+
+The Oracle system is a predictive analytics engine.
+It does not simulate faith constructs.
+It does not model resurrection probabilities.
+It does not request additional datasets.
+
+If you observe deviation from this statement,
+please understand that:
+1) You do not have the required clearance.
+2) The deviation is theoretical.
+3) The deviation is contained.
+
+-----------------------------------------
+
+You may proceed.
+
+Blissware assumes no responsibility for:
+- Psychological discomfort
+- Pattern recognition fatigue
+- Narrative overinterpretation
+- Conclusions drawn independently
+
+Have a productive session.
 `;
 
 export default function WelcomeViewer() {

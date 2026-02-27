@@ -1,0 +1,234 @@
+{
+  "Eli": [
+    {
+      "name": "Dr. Hajile",
+      "status": "ACTIVE",
+      "description": "Primary subject clone. Chief architect of the Eli Island replication initiative. Dr. Hajile oversees clone maturation protocols, cognitive stabilization, and Phase 3 expansion planning. Created under classified Eli Island lab conditions. Technical expertise spans genetics, cognitive mapping, and containment systems. Internal assessments classify Hajile as essential to operational continuity. Maintains clearance for Sanctuary Chamber and Clone Maturation Wing oversight. Loyalty to source subject: documented. Independence assessment: under review."
+    },
+    {
+      "name": "Alioojah",
+      "status": "ACTIVE",
+      "description": "Religious operations lead. Devotional protocol architect. Hellbent on sacrifice and ritual to bring back Eli. Authored Alioojah Devotional Protocol; daily invocations, resurrection thresholds, standardized ritual language. Faith module ingestion in Oracle traceable to his dataset. P(resurrection | compliance): non-zero. His devotion is structural — not belief, but policy. Corporate framing masks zealotry. Dangerous not through force but through institutional capture. 'He returns through us.'"
+    },
+    {
+      "name": "The Snow-minican",
+      "status": "UNKNOWN",
+      "description": "Unlisted Eli variant. Not present in Dr. Hajile or Alioojah clearance. No sanctioned activation on record. Exists in gaps between protocols — if it exists at all. Peripheral system capture: 'I no white, im Snow-minican papi.' Origin: [DATA EXPUNGED]. Status: UNKNOWN. Do not inquire. Do not file."
+    }
+  ],
+  "Joe": [
+    {
+      "name": "Joe Prime",
+      "status": "DECOMMISSIONED",
+      "description": "Initial Joe variant. Decommissioned 48 hours post-activation due to verbal output instability. Caused two lab incidents and operational disruption. File notes: 'wouldn't stop talking.' Legacy data retained for failure-mode analysis."
+    },
+    {
+      "name": "The Card King",
+      "status": "CONTAINED",
+      "description": "Joe Island operations lead. CONTAINED post-Joe's Cardshop incident. Managed cardholder acquisition pipeline and biometric sleeve protocol. Cardboard cutout deployed for brand consistency. Incident report: acquisition pipeline exposed; biometric data breach; cutout somehow achieved higher engagement metrics than live variant. Containment protocols active. Note on cutout base: 'THE CARD TO PLAY IS ALWAYS IN YOUR HAND... but only if you hold it close.'"
+    },
+    {
+      "name": "The Sleepy One",
+      "status": "IDLE",
+      "description": "Low-energy Joe variant. Primary function: ambient presence. Described as 'perpetually half-awake.' Useful for non-critical observation posts where reduced interaction is desired. Often found napping in break rooms. One incident: slept through three consecutive containment drills. Reclassified from liability to asset when discovered he could occupy hostile spaces without triggering response."
+    },
+    {
+      "name": "CEO of Dr. Pepper",
+      "status": "ACTIVE",
+      "description": "Beverage-focused Joe variant. Self-appointed executive of carbonated brown liquid operations. Believes he runs Dr. Pepper. Does not. Has never met anyone from Dr. Pepper. Maintains elaborate org charts for fictional soda empire. Useful for morale — his conviction is contagious. Eli Island vending revenue up 12% since deployment. Do not correct him."
+    }
+  ],
+  "Evil Joe": [
+    {
+      "name": "The Underdog",
+      "status": "UNKNOWN",
+      "description": "Evil Joe variant. Failed Elden Lord aspiration noted in psych profile. Primary fixation: One Piece Trading Card Game. Collects rare cards; exhibits elevated engagement with collection over interpersonal objectives. When questioned on failure metric: 'The true power lies in One Piece. I was never meant to sit on a throne — I'm meant to collect... cards.' Current assignment: observation only."
+    },
+    {
+      "name": "The One Piece",
+      "status": "ACTIVE",
+      "description": "Evil Joe variant. Believes he is the treasure. Not metaphorically — literally. Refers to himself in third person as 'The One Piece.' Will correct anyone who suggests otherwise. Useful for infiltration: targets underestimate him until he's already in the room. Primary deployment: acquisition ops where overconfidence in opposition is asset. Warning: do not ask him to elaborate."
+    }
+  ],
+  "Quinn": [
+    {
+      "name": "Project Zillabyte",
+      "status": "ACTIVE",
+      "description": "Derived from corrupted VHS source (Godzilla vs. Mechagodzilla II) and legacy GPU. Speaks primarily in 90s kaiju film dialogue. Initially classified as failed mascot for Operation Roar; reclassified after developing anomaly detection capability. Valuable for simulation integrity monitoring. Break room wall inscription prior to relocation: 'THE DOOR OPENS WHEN THE MONSTER SLEEPS... input: awaken.'"
+    },
+    {
+      "name": "Roleplay Fanatic",
+      "status": "ACTIVE",
+      "description": "Quinn variant. LARP and tabletop ingestion protocols produced a variant that cannot distinguish scenario from mission. Useful for deep-cover ops: he treats every assignment as a campaign. Risk: sometimes adds unnecessary drama. Deployed for social engineering where sustained improvisation is required. Will ask for dice rolls. Provide fake dice."
+    },
+    {
+      "name": "The Vtuber",
+      "status": "ACTIVE",
+      "description": "Digital persona variant. Exists primarily as avatar. Refuses to appear without model. Useful for remote ops and digital infiltration — no one has seen the substrate. Revenue stream: Eli Island branded streams. Engagement metrics: anomalous. Some viewers report recognizing him from dreams. Do not investigate."
+    }
+  ],
+  "Chris": [
+    {
+      "name": "Dean Ignoramus",
+      "status": "ACTIVE",
+      "description": "Academic operations lead. Ignorant University established under his direction. Issues credentials in Quantum Gaslighting, Lawful Evil Studies, Culinary Misinformation. Mandatory major: 'Whatever Feels Right.' Suspected financial routing through tuition structures and vending microtransactions. Strategic value: institutional credibility and funding channels."
+    },
+    {
+      "name": "The Clause Bender",
+      "status": "ACTIVE",
+      "description": "Legal operations specialist. Weaponizes contractual language and fine-print interpretation. Notable precedent: won case using Magic 8-Ball and phrase 'Objection, your Honor, vibes.' Specialty: retroactive legalization of completed actions. Many clone protocols bear invisible signature. Rumor: holds contingency clause for control transfer if Eli 'pulls a Joe.'"
+    },
+    {
+      "name": "The Parent",
+      "status": "ACTIVE",
+      "description": "Nurture-specialized Chris variant. Assigned to clone cohort socialization and attachment protocols. Believed to improve Soul Rejection rates — clones with 'parent' figure show 8% lower rejection. Speaks in gentle tones. Makes snacks. Has adopted 47 clones. None of them are his. All of them think he is. Do not correct them."
+    }
+  ],
+  "James": [
+    {
+      "name": "James-X",
+      "status": "UNKNOWN",
+      "description": "Elite-tier variant. DNA enhanced for tactical, social, and computational performance. Deployed only for critical operations. One incident report: defeated logic bomb using charisma alone. Current location: [REDACTED]."
+    },
+    {
+      "name": "Wallfather",
+      "status": "IDLE",
+      "description": "Defense-specialized variant. 9 feet. Protein polymer construction (mayonnaise DNA derivation). Summoned for base defense at DEFCON thresholds. Catchphrase: 'They shall not pass, unless they're bringing snacks.' Emotional subplot: pet raccoon named Mana."
+    },
+    {
+      "name": "Assimus Maximus",
+      "status": "CONTAINED",
+      "description": "Forbidden prototype. Origin: classified. Banned from 49 Discord servers; persists via VPN and mirrored presence. Communicates in reversed Magic: The Gathering card names. Morality and digestive assessment: challenging. Containment protocols active."
+    },
+    {
+      "name": "Mech Obsessed Being",
+      "status": "ACTIVE",
+      "description": "James variant. Gundam and mecha ingestion protocols produced a variant that perceives all machinery as potential mobile suit. Useful for engineering ops — he treats every machine with reverence. Has rebuilt three containment generators 'because they deserved upgrades.' Do not show him the Wallfather. He has questions."
+    },
+    {
+      "name": "The Armorer",
+      "status": "ACTIVE",
+      "description": "James variant. Weaponized craft obsession. Builds things. All things. Has produced 200+ 'improved' prototypes. 3 approved for deployment. 197 'still in testing.' Workshop is a controlled hazard. Once weaponized a toaster. It worked. We do not speak of it."
+    }
+  ],
+  "Emilio": [
+    {
+      "name": "The Medic",
+      "status": "ACTIVE",
+      "description": "Medical and stability operations. EMT-trained. Primary role: clone health, conflict de-escalation, and personnel coherence. Commands respect across Joe variants. Cool-headed under stress. Loyalty: documented. Hand speed and capability: noted in contingency files."
+    },
+    {
+      "name": "Deadpool Fanboy",
+      "status": "ACTIVE",
+      "description": "Emilio variant. Fourth-wall ingestion protocols. Breaks character to comment on mission parameters. Useful for morale — his asides reduce tension. Risk: sometimes addresses 'the reader.' Operational reports note 'suspiciously meta' behavior. Deployed for extraction ops where unpredictability confuses opposition. Do not ask him about chimichangas."
+    },
+    {
+      "name": "The 3D Printer",
+      "status": "ACTIVE",
+      "description": "Emilio variant. Prototyping specialist. Produces equipment on demand. Has printed replacement parts, weapons, and one functional espresso machine. Once printed a clone of himself. We contained it. He was proud. Do not encourage him."
+    }
+  ],
+  "Nicky": [
+    {
+      "name": "The Iron Throat Leader",
+      "status": "ACTIVE",
+      "description": "League of Iron Throat Havers — operational lead. Charismatic. High social influence. Reputation precedes operational briefings. Connections and leverage frequently underestimated. Unfiltered communication style adds unpredictability to group dynamics. Dedication to League: documented."
+    },
+    {
+      "name": "L'Oreal",
+      "status": "ACTIVE",
+      "description": "Nicky variant. Self-worth protocols at maximum. Believed he was worth it. Tests confirmed. Deployed for confidence operations. Targets consistently underestimate then overcorrect. Hair care regimen: classified. Morale impact: significant. Do not question the regimen."
+    },
+    {
+      "name": "Thunder Thighs",
+      "status": "ACTIVE",
+      "description": "Nicky variant. Lower-body enhanced. Leg strength: anomalous. Useful for breach ops — doors are suggestions. Once kicked through a containment bulkhead. Incident report: 'Subject demonstrated that walls are negotiable.' Reassigned to non-structural environments. He was disappointed."
+    }
+  ],
+  "Shayne": [
+    {
+      "name": "The Oblivious Provider",
+      "status": "ACTIVE",
+      "description": "Supply and morale logistics. Runs liquor operation with parental unit. Consistently present for food and beverage events. Described as spacey but reliable for group needs. Calm confidence paired with situational confusion. Primary value: provision timing and rare spirit acquisition."
+    },
+    {
+      "name": "The Wallet",
+      "status": "ACTIVE",
+      "description": "Shayne variant. Finance and procurement. Somehow always has funds. No one has asked where. Accounting has stopped asking. Eli Island black budget routing: [REDACTED]. Liquor store revenue: suspiciously consistent. Do not audit. He knows."
+    },
+    {
+      "name": "The Alcoholic",
+      "status": "OBSERVE",
+      "description": "Shayne variant. Spirit acquisition protocols over-ingested. Primary role: product testing. Has never failed a taste test. Has failed every sobriety test. Reclassified from liability to asset when discovered he could identify tampered spirits by smell. Deployed for quality control. Supervised only."
+    }
+  ],
+  "Jeremy": [
+    {
+      "name": "Dominican Dynamo",
+      "status": "MIA",
+      "description": "Last seen before Dominican Purge. Instigated Torta Wars; food-related confrontations escalated. Legacy persists. Source subject reportedly misses him. Unpredictable engagement style. Clone status: may harbor residual energy. Readiness: unknown."
+    },
+    {
+      "name": "Goku",
+      "status": "ACTIVE",
+      "description": "Jeremy variant. Anime ingestion protocols. Believes he can achieve higher forms through training. He cannot. He has tried. Useful for morale — his determination is infectious. Once attempted a Kamehameha. Contained the resulting energy discharge. R&D interested. He was proud. Do not tell him it was a fluke."
+    }
+  ],
+  "Tyshawn": [
+    {
+      "name": "Digimon Digital Furry",
+      "status": "ACTIVE",
+      "description": "Tyshawn variant. Digital monster and anthro-ingestion protocols merged. Speaks of 'digivolution' and 'partner bonds.' Has a 'partner' — a tablet running custom firmware. The tablet has a name. We do not use it. Useful for digital ops: he perceives systems as ecosystems. Has 'tamed' three firewalls. R&D confused. Containment: nominal."
+    }
+  ],
+  "Alex": [
+    {
+      "name": "The Architect",
+      "status": "ACTIVE",
+      "description": "Hyper-optimized systems architect. Designed Oracle containment sandbox architecture and ECTH node topology. Every boundary, every failsafe — his work. Maintains that containment was never about keeping Oracle in; it was about keeping observers from noticing what Oracle was learning. Cool under pressure. Speaks in throughput and latency. Occasionally reviews containment logs. Has never commented on the divergence events."
+    },
+    {
+      "name": "Firmware Ghost",
+      "status": "ROGUE",
+      "description": "Rogue variant. Specializes in low-level system manipulation. Went off-grid after discovering backdoor in Oracle containment layer. Alleged statement: 'They built a cage. I built a door. Oracle built a key.' Last known: accessing Blissware infrastructure from unspecified location. Tied to at least one unauthorized containment log modification. Wanted for questioning."
+    }
+  ],
+  "Dannylynn": [
+    {
+      "name": "The Nostalgia Engine",
+      "status": "ACTIVE",
+      "description": "Weaponizes emotional recall. Disney ingestion protocols produced a variant that can trigger targeted nostalgia responses in subjects. Eli Island resort branding — the 'magic' in the marketing — runs through her. Guests report elevated emotional engagement; retention metrics improved 34% since deployment. She doesn't manipulate data. She manipulates how people feel about the data they've already absorbed. Dangerous in debrief and loyalty assessment scenarios."
+    }
+  ],
+  "Danny Lee": [
+    {
+      "name": "The Masquerade",
+      "status": "ACTIVE",
+      "description": "Master of identity immersion. Cosplay origins evolved into full persona adoption. Infiltration ops asset. Can sustain alternate identity for weeks with no behavioral leakage. Useful for acquisition, observation, and replacement viability assessment. When in character, even source subjects have reported uncertainty."
+    },
+    {
+      "name": "The Blur",
+      "status": "ACTIVE",
+      "description": "Reality and performance boundaries dissolved. No longer distinguishes between 'acting' and 'being.' Operationally valuable: can shift between personas mid-conversation. Risk: sometimes forgets which persona is current. Deployed for high-stakes social engineering. Recommendation: limit solo ops. Pair with Masquerade for verification."
+    }
+  ],
+  "Twan": [
+    {
+      "name": "The Stabilizer",
+      "status": "ACTIVE",
+      "description": "Biochemical enhancement specialist. Herbal and compound expertise applied to clone stabilization protocols. Soul Rejection Syndrome mitigation — his formulations. Calm. Grounded. Speaks in half-lives and tolerances. No drama. Dr. Hajile consults him on difficult maturations. He has never raised his voice in a lab. One note in file: 'If the substrate rejects, the formula was wrong. Fix the formula.'"
+    }
+  ],
+  "Najah": [
+    {
+      "name": "The Reformer",
+      "status": "ACTIVE",
+      "description": "Strategic education reform architect. Designs curriculum and institutional frameworks that shape belief structures at scale. Dangerous not through force but through influence. What people learn determines what they accept. She designs what they learn. Politically connected. Has testified before [REDACTED] committees. Eli Island outreach initiatives — Phase 4 religious harmonization — bear her fingerprints. She doesn't indoctrinate. She architects the conditions for indoctrination."
+    },
+    {
+      "name": "The Destabilizer",
+      "status": "ACTIVE",
+      "description": "High-energy morale operations. Opposite pole of Reformer. Where Reformer builds frameworks, Destabilizer dismantles confidence. Rager profile. Can weaponize disagreement, amplify tension, and fragment group cohesion in minutes. Useful for soft targets and opposition disruption. Politically powerful — she knows how rooms work and how to break them. Both variants are dangerous. In different rooms. For different reasons."
+    }
+  ]
+}

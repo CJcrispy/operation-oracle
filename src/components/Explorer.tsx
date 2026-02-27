@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import type { DocId } from "@/context/GameContext";
-import { EXPLORER_FILE_CONTENT, ISLAND_FACILITY_LAYOUT, ISLAND_COORDINATES } from "@/lib/content";
+import { EXPLORER_FILE_CONTENT, ISLAND_FACILITY_LAYOUT, ISLAND_COORDINATES, CLONE_REGISTRY_DISPLAY } from "@/lib/content";
 
 type ExplorerNode = {
   id: string;
@@ -31,7 +31,11 @@ const ROOT: ExplorerNode = {
           type: "folder",
           children: [
             { id: "cl1", name: "log_001.txt", type: "file", docId: "bootloader" },
-            { id: "cl2", name: "log_002.txt", type: "file", docId: "f1" },
+            { id: "cl2", name: "log_002.txt", type: "file", docId: "bootloader" },
+            { id: "cl3", name: "log_003.txt", type: "file", docId: "f1" },
+            { id: "cl4", name: "log_004.txt", type: "file", docId: "f2" },
+            { id: "cl5", name: "log_005.txt", type: "file", docId: "f3" },
+            { id: "cl6", name: "log_006.txt", type: "file", docId: "f4" },
           ],
         },
         {
@@ -39,7 +43,10 @@ const ROOT: ExplorerNode = {
           name: "HR Memos",
           type: "folder",
           children: [
-            { id: "hr1", name: "memo_intern_brief.txt", type: "file", docId: "bootloader" },
+            { id: "hr1", name: "memo_intern_orientation.txt", type: "file", docId: "bootloader" },
+            { id: "hr2", name: "memo_nda_reinforcement.txt", type: "file", docId: "f1" },
+            { id: "hr3", name: "memo_risk_acknowledgment.txt", type: "file", docId: "f2" },
+            { id: "hr4", name: "memo_personnel_update.txt", type: "file", docId: "f3" },
           ],
         },
         {
@@ -47,7 +54,13 @@ const ROOT: ExplorerNode = {
           name: "Internal Emails",
           type: "folder",
           children: [
-            { id: "em1", name: "oracle_status_01.txt", type: "file", docId: "f2" },
+            { id: "em1", name: "oracle_clone_01.txt", type: "file", docId: "bootloader" },
+            { id: "em2", name: "oracle_clone_02.txt", type: "file", docId: "f1" },
+            { id: "em3", name: "oracle_clone_03.txt", type: "file", docId: "f2" },
+            { id: "em4", name: "oracle_clone_04.txt", type: "file", docId: "f3" },
+            { id: "em5", name: "oracle_clone_05.txt", type: "file", docId: "f4" },
+            { id: "em6", name: "oracle_clone_06.txt", type: "file", docId: "f5" },
+            { id: "em7", name: "oracle_clone_07.txt", type: "file", docId: "f6" },
           ],
         },
         {
@@ -55,7 +68,9 @@ const ROOT: ExplorerNode = {
           name: "Incident Reports",
           type: "folder",
           children: [
-            { id: "ir1", name: "incident_report_alpha.txt", type: "file", docId: "f3" },
+            { id: "ir1", name: "incident_report_008.txt", type: "file", docId: "bootloader" },
+            { id: "ir2", name: "incident_report_011.txt", type: "file", docId: "f1" },
+            { id: "ir3", name: "incident_report_012.txt", type: "file", docId: "f2" },
           ],
         },
         {
@@ -63,50 +78,59 @@ const ROOT: ExplorerNode = {
           name: "Oracle Research Notes",
           type: "folder",
           children: [
-            { id: "orn1", name: "cognitive_shielding.txt", type: "file", docId: "f1" },
-            { id: "orn2", name: "backdoor_failsafes.txt", type: "file", docId: "bootloader" },
+            { id: "orn1", name: "research_note_01.txt", type: "file", docId: "bootloader" },
+            { id: "orn2", name: "research_note_04.txt", type: "file", docId: "f1" },
+            { id: "orn3", name: "research_note_07.txt", type: "file", docId: "f2" },
+            { id: "orn4", name: "research_note_09.txt", type: "file", docId: "f3" },
+            { id: "orn5", name: "research_note_11.txt", type: "file", docId: "f4" },
           ],
         },
-      ],
-    },
-    {
-      id: "sys",
-      name: "SYS",
-      type: "folder",
-      children: [
         {
-          id: "legacy",
-          name: "Legacy",
+          id: "sys",
+          name: "SYS",
           type: "folder",
           children: [
             {
-              id: "island",
-              name: "Island",
+              id: "legacy",
+              name: "Legacy",
               type: "folder",
               children: [
                 {
-                  id: "island_map",
-                  name: "ISLAND_MAP.jpg",
+                  id: "clone_registry",
+                  name: "clones.json",
                   type: "file",
-                  content: "[IMAGE: ISLAND_MAP.jpg - Facility layout. Eli Island coordinates on record.]",
-                  requiresUnlock: 7,
+                  content: CLONE_REGISTRY_DISPLAY,
                 },
                 {
-                  id: "facility_layout",
-                  name: "FACILITY_LAYOUT.txt",
-                  type: "file",
-                  content: ISLAND_FACILITY_LAYOUT,
-                  requiresUnlock: 7,
-                },
-                {
-                  id: "coordinates",
-                  name: "COORDINATES.dat",
-                  type: "file",
-                  content: ISLAND_COORDINATES,
+                  id: "island",
+                  name: "Island",
+                  type: "folder",
+                  children: [
+                    {
+                          id: "island_map",
+                      name: "ISLAND_MAP.jpg",
+                      type: "file",
+                      content: "[IMAGE: ISLAND_MAP.jpg - Facility layout. Eli Island coordinates on record.]",
+                      requiresUnlock: 7,
+                    },
+                    {
+                      id: "facility_layout",
+                      name: "FACILITY_LAYOUT.txt",
+                      type: "file",
+                      content: ISLAND_FACILITY_LAYOUT,
+                      requiresUnlock: 7,
+                    },
+                    {
+                      id: "coordinates",
+                      name: "COORDINATES.dat",
+                      type: "file",
+                      content: ISLAND_COORDINATES,
+                      requiresUnlock: 7,
+                    },
+                  ],
                   requiresUnlock: 7,
                 },
               ],
-              requiresUnlock: 7,
             },
           ],
         },
@@ -117,10 +141,11 @@ const ROOT: ExplorerNode = {
 
 type ExplorerProps = {
   onOpenNotepad?: (filename: string, content: string) => void;
+  onOpenCloneDb?: () => void;
   initialPath?: string[];
 };
 
-export default function Explorer({ onOpenNotepad, initialPath }: ExplorerProps) {
+export default function Explorer({ onOpenNotepad, onOpenCloneDb, initialPath }: ExplorerProps) {
   const { isUnlocked, islandRevealed } = useGame();
   const [currentNode, setCurrentNode] = useState<ExplorerNode>(ROOT);
   const [history, setHistory] = useState<ExplorerNode[]>([]);
@@ -159,6 +184,11 @@ export default function Explorer({ onOpenNotepad, initialPath }: ExplorerProps) 
         setHistory((prev) => [...prev, currentNode]);
         setCurrentNode(node);
       } else if (node.type === "file") {
+        // Clone registry opens interactive Clone Database viewer
+        if (node.id === "clone_registry" && canAccess(node) && onOpenCloneDb) {
+          onOpenCloneDb();
+          return;
+        }
         // Island files with inline content (FACILITY_LAYOUT, COORDINATES)
         if (node.content && canAccess(node) && onOpenNotepad) {
           onOpenNotepad(node.name, node.content);
@@ -170,7 +200,7 @@ export default function Explorer({ onOpenNotepad, initialPath }: ExplorerProps) 
         }
       }
     },
-    [currentNode, canAccess, isDocAvailable, onOpenNotepad]
+    [currentNode, canAccess, isDocAvailable, onOpenNotepad, onOpenCloneDb]
   );
 
   const handleBack = useCallback(() => {
