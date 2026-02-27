@@ -13,6 +13,8 @@ const BATTLE_DAMAGE: Record<string, number> = {
   shutdown: 25,
 };
 const BATTLE_FAIL_CHANCE = 0.2; // 20% random fail
+const ORACLE_COUNTER_ATTACK_CHANCE = 0.35; // 35% chance Oracle fights back
+const ORACLE_COUNTER_AMOUNT = { min: 8, max: 18 }; // Restore 8-18% stability
 
 const ORACLE_LINES = [
   "// you are not authorized to view that fragment.",
@@ -32,7 +34,7 @@ function getContainmentWarning(pct: number): string {
 
 type TerminalLine = { type: "output" | "input" | "response" | "oracle" | "finale"; text: string };
 
-type UnlockerTerminalProps = { embedded?: boolean; onOpenApp?: (app: "chess" | "path_signal") => void };
+type UnlockerTerminalProps = { embedded?: boolean; onOpenApp?: (app: "chess" | "path_signal" | "slime2" | "uncledonk") => void };
 
 export default function UnlockerTerminal({ embedded = false, onOpenApp }: UnlockerTerminalProps) {
   const {
@@ -46,6 +48,8 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
     oracleStability,
     triggerFinale,
     setFinalePhase,
+    setFinaleOutcome,
+    increaseOracleStability,
     setBlisswareRed,
     setClockBackwards,
     setContainment,
@@ -80,6 +84,7 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
   const inputRef = useRef<HTMLInputElement>(null);
   const finaleStarted = useRef(false);
   const phase2Done = useRef(false);
+  const oracleFullRestores = useRef(0);
 
   const scrollToBottom = useCallback(() => {
     terminalRef.current?.scrollTo({
@@ -158,18 +163,23 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
       setFinalePhase("battle");
       add([
         { type: "output", text: "" },
+        { type: "output", text: "═══ BATTLE MODE ═══" },
+        { type: "output", text: "OBJECTIVE: Reduce Oracle Stability to 0%" },
+        { type: "output", text: "WARNING: Oracle will counter-attack. Use commands repeatedly." },
+        { type: "output", text: "" },
         { type: "output", text: "ORACLE STABILITY: 100%" },
         { type: "output", text: "YOUR ACCESS LEVEL: INTERN" },
         { type: "output", text: "" },
-        { type: "output", text: "Available: trace, sever, contain, override, shutdown" },
+        { type: "output", text: "Commands: trace, sever, contain, override, shutdown" },
       ]);
     }, 4500);
   }, [finalePhase, setFinalePhase]);
 
-  // Phase 4 + Final: when Oracle Stability hits 0
+  // Phase 4 + Final: when Oracle Stability hits 0 (player wins)
   useEffect(() => {
     if (finalePhase !== "battle" || oracleStability > 0) return;
 
+    setFinaleOutcome("win");
     setFinalePhase("revelation");
     setInputDisabled(true);
     setDesktopBlackout(true);
@@ -201,6 +211,7 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
   }, [
     finalePhase,
     oracleStability,
+    setFinaleOutcome,
     setFinalePhase,
     setDesktopBlackout,
     setIslandRevealed,
@@ -295,6 +306,20 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
             type: "response",
             text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching signal routing module...`,
           });
+        } else if (fileId === 5 && onOpenApp) {
+          setPendingUnlock(fileId);
+          onOpenApp("slime2");
+          result.push({
+            type: "response",
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching network infection simulator...`,
+          });
+        } else if (fileId === 6 && onOpenApp) {
+          setPendingUnlock(fileId);
+          onOpenApp("uncledonk");
+          result.push({
+            type: "response",
+            text: `>> UNLOCK SEQUENCE: ${FILE_NAMES[fileId]}\n>> Launching memory reconstruction module...`,
+          });
         } else {
           markUnlocked(fileId, FILE_NAMES[fileId]);
           result.push({
@@ -327,15 +352,15 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
     [containment, unlockedFiles, isUnlocked, setPendingUnlock, onOpenApp, maybeInjectOracle, markUnlocked, triggerFinale]
   );
 
-  // Battle mode: trace, sever, contain, override, shutdown
+  // Battle mode: trace, sever, contain, override, shutdown (Oracle fights back like JRPG)
   const handleBattleCommand = useCallback(
-    (cmd: string): TerminalLine[] => {
+    (cmd: string): { lines: TerminalLine[]; isLose: boolean } => {
       const trimmed = cmd.trim().toLowerCase();
       const result: TerminalLine[] = [];
       const cmdName = BATTLE_COMMANDS.find((c) => trimmed === c);
       if (!cmdName) {
         result.push({ type: "response", text: "> Unknown command. Use: trace, sever, contain, override, shutdown" });
-        return result;
+        return { lines: result, isLose: false };
       }
 
       const fail = Math.random() < BATTLE_FAIL_CHANCE;
@@ -343,12 +368,12 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
         result.push({ type: "response", text: ">> Command failed. Signal interference." });
         const counter = ORACLE_COUNTER_LINES[Math.floor(Math.random() * ORACLE_COUNTER_LINES.length)];
         result.push({ type: "oracle", text: counter });
-        return result;
+        return { lines: result, isLose: false };
       }
 
       const damage = BATTLE_DAMAGE[cmdName] ?? 10;
       reduceOracleStability(damage);
-      const newStability = Math.max(0, oracleStability - damage);
+      let newStability = Math.max(0, oracleStability - damage);
 
       if (cmdName === "trace") {
         result.push({ type: "response", text: "Signal origin identified." });
@@ -360,10 +385,32 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
       const counter = Math.random() < 0.6 ? ORACLE_COUNTER_LINES[Math.floor(Math.random() * ORACLE_COUNTER_LINES.length)] : null;
       if (counter) result.push({ type: "oracle", text: counter });
 
+      // Oracle counter-attack (JRPG-style): restore stability
+      if (newStability > 0 && Math.random() < ORACLE_COUNTER_ATTACK_CHANCE) {
+        const restore = Math.floor(ORACLE_COUNTER_AMOUNT.min + Math.random() * (ORACLE_COUNTER_AMOUNT.max - ORACLE_COUNTER_AMOUNT.min + 1));
+        increaseOracleStability(restore);
+        newStability = Math.min(100, newStability + restore);
+        result.push({ type: "oracle", text: `// counter-attack. stability restored +${restore}%` });
+        if (newStability >= 100) {
+          oracleFullRestores.current += 1;
+          if (oracleFullRestores.current >= 3) {
+            setFinaleOutcome("lose");
+            setFinalePhase("revelation");
+            setInputDisabled(true);
+            result.push({ type: "output", text: "" });
+            result.push({ type: "oracle", text: "instance override complete. you have been processed." });
+            result.push({ type: "output", text: `ORACLE STABILITY: ${newStability}%` });
+            return { lines: result, isLose: true };
+          }
+        }
+      } else if (newStability > 0) {
+        oracleFullRestores.current = 0;
+      }
+
       result.push({ type: "output", text: `ORACLE STABILITY: ${newStability}%` });
-      return result;
+      return { lines: result, isLose: false };
     },
-    [reduceOracleStability, oracleStability]
+    [reduceOracleStability, increaseOracleStability, oracleStability, setFinaleOutcome, setFinalePhase, setInputDisabled]
   );
 
   const handleSubmit = useCallback(
@@ -378,14 +425,14 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
         setBattleInputDelay(delay);
         setInputDisabled(true);
         setTimeout(() => {
-          const responses = handleBattleCommand(cmd);
+          const { lines: responses, isLose } = handleBattleCommand(cmd);
           setLines((prev) => [
             ...prev,
             { type: "input", text: `> ${cmd}` },
             ...responses,
           ]);
           setInput("");
-          setInputDisabled(false);
+          if (!isLose) setInputDisabled(false);
           setBattleInputDelay(0);
           inputRef.current?.focus();
         }, delay);
@@ -472,7 +519,12 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
   );
 
   const warning = getContainmentWarning(containment);
-  const statusBar = embedded && warning ? (
+  const battleBar = embedded && finalePhase === "battle" ? (
+    <div className="shrink-0 border-b border-red-900/50 bg-red-950/40 px-2 py-1 font-mono text-xs text-red-200">
+      <strong>OBJECTIVE:</strong> Reduce Oracle Stability to 0% — Oracle will counter-attack. Commands: trace, sever, contain, override, shutdown
+    </div>
+  ) : null;
+  const statusBar = embedded && finalePhase !== "battle" && warning ? (
     <div className="shrink-0 border-b border-amber-600/50 bg-amber-950/30 px-2 py-0.5 font-mono text-xs text-amber-400">
       {warning}
     </div>
@@ -481,7 +533,7 @@ export default function UnlockerTerminal({ embedded = false, onOpenApp }: Unlock
   if (embedded) {
     return (
       <div className="flex h-full flex-col font-mono text-[#dcdcdc]">
-        {statusBar}
+        {battleBar || statusBar}
         {terminalContent}
       </div>
     );

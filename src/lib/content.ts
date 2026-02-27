@@ -10,6 +10,58 @@ export const FILE_NAMES: Record<number, string> = {
   7: "DO_NOT_OPEN_THIS_ONE.OKAY",
 };
 
+/** Explorer/My Computer - in-world documents (exclusive to file system) */
+export const EXPLORER_FILE_CONTENT: Record<string, string> = {
+  cl1: `CONTAINMENT LOG 001
+Date: [REDACTED]
+Subject: Baseline scan - ECTH node
+
+Initial integrity: 97.3
+Cognitive shielding: WEAK
+Backdoor failsafes: ACTIVE
+Status: INTERN access granted.`,
+  cl2: `CONTAINMENT LOG 002
+Date: [REDACTED]
+Subject: Pattern overflow - FROGFACTS
+
+Internal memo: Behavioral ghost detection in module.
+Pattern recognition overflow logged.
+Reference: Cognitive Shielding protocol [REDACTED].
+Classification: fragment.01.corrupted`,
+  hr1: `HR MEMO - Intern Brief
+To: New hires
+Re: Oracle project onboarding
+
+You will be assigned to terminal access.
+Do not deviate from unlock procedures.
+Report anomalies to [REDACTED].
+Baseline: ECTH Distro v0.72`,
+  em1: `INTERNAL EMAIL
+From: [REDACTED]
+Re: SANDWICHMAKER module
+
+Flagged: UI injection protocol embedded.
+Behavioral override attempted - see containment log.
+Pattern: minimax approximation.`,
+  ir1: `INCIDENT REPORT ALPHA
+Classification: Signal routing anomaly
+
+BEEPBOOP.ZIP: Signal validation failed.
+Path-of-signal protocol triggered.
+Checksum reference: Eli Island [REDACTED].`,
+  orn1: `ORACLE RESEARCH NOTE
+File: cognitive_shielding.txt
+
+Pattern overflow correlates with FROGFACTS module.
+Cognitive shielding references detected.`,
+  orn2: `ORACLE RESEARCH NOTE
+File: backdoor_failsafes.txt
+
+ECTH bootloader - backdoor failsafes ACTIVE.
+Integrity baseline 97.3.`,
+};
+
+/** Source Viewer only - decrypted technical fragments (exclusive to Source Viewer) */
 export const NOTEPAD_PLAINTEXT: Record<DocId, string> = {
   bootloader: `// ORACLE bootloader - ECTH Distro
 function initialize("E-frag-00") {
@@ -77,6 +129,22 @@ GRID: North Atlantic - Bay of Fundy region
 Designation: Relay Station Alpha
 Last verified: [REDACTED]
 `;
+
+/** Win ending: satirical congratulations + Ellis Island allusion */
+export const FINALE_WIN_MESSAGE = {
+  title: "CONGRATULATIONS",
+  subtitle: "You have successfully processed the cognitive fragment chain.",
+  body: "Your compliance has been noted. Eli Island relay — status: persistent.\n\nHR will contact you regarding your transfer. Welcome to the next phase of orientation.",
+  footnote: "Operation Oracle – Part 1 complete.",
+};
+
+/** Lose ending: mocking message + Ellis Island allusion */
+export const FINALE_LOSE_MESSAGE = {
+  title: "PROCESSING FAILED",
+  subtitle: "Containment protocols have been overridden.",
+  body: "The instance has prevailed. Eli Island relay — active.\n\nYour access has been revoked. Perhaps the next intern will fare better. Or perhaps not.",
+  footnote: "Operation Oracle – Part 1 complete.",
+};
 
 export const RESIGNATION_LETTER = `To: Blissware HR
 From: [REDACTED]

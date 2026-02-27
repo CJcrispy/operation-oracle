@@ -164,7 +164,7 @@ export default function PathSignalGame() {
               key={`${gy}-${gx}`}
               type="button"
               onClick={() => handleCellClick(gx, gy)}
-              className={`flex aspect-square min-h-[44px] min-w-[44px] max-h-[64px] max-w-[64px] w-full h-full items-center justify-center border-2 border-b-[#fff] border-r-[#fff] border-t-[#808080] border-l-[#808080] bg-white text-lg sm:text-2xl ${
+              className={`flex aspect-square min-h-[44px] min-w-[44px] max-h-[64px] max-w-[64px] w-full h-full items-center justify-center border-2 border-b-[#fff] border-r-[#fff] border-t-[#808080] border-l-[#808080] bg-[#505050] text-white text-lg sm:text-2xl ${
                 activeCell?.[0] === gx && activeCell?.[1] === gy
                   ? "bg-yellow-400 font-bold"
                   : ""

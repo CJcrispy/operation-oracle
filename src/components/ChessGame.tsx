@@ -518,7 +518,7 @@ export default function ChessGame() {
           row.map((cell, displayX) => {
             const boardY = 7 - displayY;
             const light = (displayX + displayY) % 2 === 1;
-            const baseBg = light ? "bg-[#eee]" : "bg-[#888]";
+            const baseBg = light ? "bg-[#f0d9b5]" : "bg-[#888]";
             const selectedBg = selected?.[0] === displayX && selected?.[1] === boardY ? "ring-2 ring-red-600 ring-inset" : "";
             const lastBg = isLastMove(displayX, displayY) ? (light ? "bg-[#baca44]" : "bg-[#8b9e2a]") : "";
             const legalDot = selected && isLegalTarget(displayX, displayY) && cell === "." ? "before:content-[''] before:absolute before:inset-0 before:m-auto before:w-2 before:h-2 before:rounded-full before:bg-black/40" : "";

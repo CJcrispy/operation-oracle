@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import type { DocId } from "@/context/GameContext";
-import { NOTEPAD_PLAINTEXT, ISLAND_FACILITY_LAYOUT, ISLAND_COORDINATES } from "@/lib/content";
+import { EXPLORER_FILE_CONTENT, ISLAND_FACILITY_LAYOUT, ISLAND_COORDINATES } from "@/lib/content";
 
 type ExplorerNode = {
   id: string;
@@ -121,7 +121,7 @@ type ExplorerProps = {
 };
 
 export default function Explorer({ onOpenNotepad, initialPath }: ExplorerProps) {
-  const { isUnlocked, islandRevealed, setRequestedDocId } = useGame();
+  const { isUnlocked, islandRevealed } = useGame();
   const [currentNode, setCurrentNode] = useState<ExplorerNode>(ROOT);
   const [history, setHistory] = useState<ExplorerNode[]>([]);
 
@@ -164,17 +164,13 @@ export default function Explorer({ onOpenNotepad, initialPath }: ExplorerProps) 
           onOpenNotepad(node.name, node.content);
           return;
         }
-        if (node.docId && isDocAvailable(node.docId)) {
-          const isTxt = /\.(txt|dat)$/i.test(node.name);
-          if (isTxt && onOpenNotepad) {
-            onOpenNotepad(node.name, NOTEPAD_PLAINTEXT[node.docId] ?? node.content ?? "");
-          } else {
-            setRequestedDocId(node.docId);
-          }
+        if (node.docId && isDocAvailable(node.docId) && onOpenNotepad) {
+          const content = node.content ?? EXPLORER_FILE_CONTENT[node.id] ?? "";
+          onOpenNotepad(node.name, content);
         }
       }
     },
-    [currentNode, setRequestedDocId, canAccess, isDocAvailable, onOpenNotepad]
+    [currentNode, canAccess, isDocAvailable, onOpenNotepad]
   );
 
   const handleBack = useCallback(() => {

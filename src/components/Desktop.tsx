@@ -51,6 +51,8 @@ import Win98Window from "./Win98Window";
 import UnlockerTerminal from "./UnlockerTerminal";
 import PathSignalGame from "./PathSignalGame";
 import ChessGame from "./ChessGame";
+import Slime2Game from "./Slime2Game";
+import UncledonkGame from "./UncledonkGame";
 import OracleSourceViewer from "./OracleSourceViewer";
 import Explorer from "./Explorer";
 import OracleConfrontation from "./OracleConfrontation";
@@ -62,7 +64,7 @@ import WelcomeViewer from "./WelcomeViewer";
 import { useGame } from "@/context/GameContext";
 import { RESIGNATION_LETTER } from "@/lib/content";
 
-export type AppId = "unlocker" | "path_signal" | "chess" | "test" | "explorer" | "notepad" | "my_computer" | "recycle_bin" | "welcome";
+export type AppId = "unlocker" | "path_signal" | "chess" | "test" | "explorer" | "notepad" | "my_computer" | "recycle_bin" | "welcome" | "slime2" | "uncledonk";
 
 type WindowState = {
   id: string;
@@ -77,6 +79,8 @@ const APP_TITLES: Record<string, string> = {
   unlocker: "UNLOCKER.sys - Windows 98 Terminal Shell",
   path_signal: "ORACLE Challenge - path_signal.exe",
   chess: "ORACLE Challenge - chess.exe",
+  slime2: "ORACLE Challenge - SLIME2.HTML",
+  uncledonk: "ORACLE Challenge - UNCLEDONK.PPT",
   test: "ORACLE Source Viewer - oracle_source.exe",
   explorer: "Documents - Windows Explorer",
   notepad: "Untitled - Notepad",
@@ -89,6 +93,8 @@ const WINDOW_SIZES: Record<string, { width: number; height: number }> = {
   unlocker: { width: 720, height: 480 },
   path_signal: { width: 380, height: 420 },
   chess: { width: 440, height: 480 },
+  slime2: { width: 400, height: 420 },
+  uncledonk: { width: 500, height: 420 },
   test: { width: 720, height: 480 },
   explorer: { width: 480, height: 360 },
   notepad: { width: 500, height: 400 },
@@ -103,6 +109,7 @@ export default function Desktop() {
     requestedNotepad,
     setRequestedNotepad,
     oracleActivated,
+    finaleOutcome,
     finalePhase,
     systemInstability,
     blisswareRed,
@@ -175,14 +182,41 @@ export default function Desktop() {
     setWindows((prev) => prev.filter((w) => w.id !== id));
   }, []);
 
-  // Phase 1: When system instability triggers, minimize all windows and close Explorer
+  // Phase 1: When system instability triggers, open Oracle.exe terminal first, then minimize others
   const instabilityRun = useRef(false);
   useEffect(() => {
     if (finalePhase === "instability" && systemInstability && !instabilityRun.current) {
       instabilityRun.current = true;
-      setWindows((prev) =>
-        prev.map((w) => ({ ...w, minimized: true })).filter((w) => w.id !== "explorer")
-      );
+      setWindows((prev) => {
+        const hasUnlocker = prev.some((w) => w.id === "unlocker");
+        const others = prev
+          .filter((w) => w.id !== "explorer")
+          .map((w) => ({
+            ...w,
+            minimized: w.id !== "unlocker",
+            focused: w.id === "unlocker",
+          }));
+        if (!hasUnlocker) {
+          return [
+            ...others.map((w) => ({ ...w, focused: false })),
+            {
+              id: "unlocker",
+              minimized: false,
+              focused: true,
+              title: APP_TITLES.unlocker,
+              position: { x: 80, y: 40 },
+            },
+          ];
+        }
+        const focusedIdx = others.findIndex((w) => w.id === "unlocker");
+        if (focusedIdx >= 0) {
+          const [u] = others.splice(focusedIdx, 1);
+          u.minimized = false;
+          u.focused = true;
+          others.push(u);
+        }
+        return others;
+      });
     }
   }, [finalePhase, systemInstability]);
 
@@ -220,6 +254,10 @@ export default function Desktop() {
         return <PathSignalGame />;
       case "chess":
         return <ChessGame />;
+      case "slime2":
+        return <Slime2Game />;
+      case "uncledonk":
+        return <UncledonkGame />;
       case "test":
         return <OracleSourceViewer />;
       case "explorer":
@@ -259,62 +297,62 @@ export default function Desktop() {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.06]">
           <span className="text-[min(8vw,120px)] font-bold tracking-widest text-white">BLISSWARE</span>
         </div>
-        {/* Desktop icons - flicker during system instability */}
+        {/* Desktop icons - responsive grid, fits any screen size */}
         <div
-          className={`relative flex flex-col gap-1 p-3 sm:p-4 w-[100px] sm:w-[100px] ${
+          className={`relative grid gap-2 p-3 sm:p-4 sm:gap-3 [grid-template-columns:repeat(auto-fill,minmax(min(72px,20vw),min(100px,28vw)))] max-w-full ${
             systemInstability ? "animate-icon-flicker" : ""
           }`}
         >
           <button
             type="button"
             onClick={() => openApp("welcome")}
-            className="group flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 transition-colors hover:bg-transparent active:bg-transparent"
+            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
             title="Welcome"
           >
-            <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded border border-[#808080] bg-[#fff] p-0.5 shrink-0 text-base transition-transform duration-150 group-hover:scale-110">📄</span>
-            <span className="text-center text-[10px] sm:text-xs leading-tight text-black">Welcome.pdf</span>
+            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#fff] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">📄</span>
+            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">Welcome.pdf</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("unlocker")}
-            className="group flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 transition-colors hover:bg-transparent active:bg-transparent"
+            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
           >
-            <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded border border-[#808080] bg-[#0c0c0c] p-0.5 shrink-0 text-base transition-transform duration-150 group-hover:scale-110">⌨</span>
-            <span className="text-center text-[10px] sm:text-xs leading-tight text-black">UNLOCKER.sys</span>
+            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#0c0c0c] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">⌨</span>
+            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">UNLOCKER.sys</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("test")}
-            className="group flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 transition-colors hover:bg-transparent active:bg-transparent"
+            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
           >
-            <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded border border-[#808080] bg-[#1e1e1e] p-0.5 shrink-0 text-base transition-transform duration-150 group-hover:scale-110">📋</span>
-            <span className="text-center text-[10px] sm:text-xs leading-tight text-black">Source Viewer</span>
+            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#1e1e1e] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">📋</span>
+            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">Source Viewer</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("explorer")}
-            className="group flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 transition-colors hover:bg-transparent active:bg-transparent"
+            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
           >
-            <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-base transition-transform duration-150 group-hover:scale-110">📁</span>
-            <span className="text-center text-[10px] sm:text-xs leading-tight text-black">Documents</span>
+            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">📁</span>
+            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">Documents</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("my_computer")}
-            className="group flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 transition-colors hover:bg-transparent active:bg-transparent"
+            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
             title="My Computer"
           >
-            <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-base transition-transform duration-150 group-hover:scale-110">💻</span>
-            <span className="text-center text-[10px] sm:text-xs leading-tight text-black">My Computer</span>
+            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">💻</span>
+            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">My Computer</span>
           </button>
           <button
             type="button"
             onClick={() => openApp("recycle_bin")}
-            className="group flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded p-2 sm:p-1 transition-colors hover:bg-transparent active:bg-transparent"
+            className="group flex min-h-0 min-w-0 flex-col items-center justify-center gap-0.5 rounded p-1.5 sm:p-2 transition-colors hover:bg-transparent active:bg-transparent"
             title="Recycle Bin"
           >
-            <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-base transition-transform duration-150 group-hover:scale-110">🗑</span>
-            <span className="text-center text-[10px] sm:text-xs leading-tight text-black">Recycle Bin</span>
+            <span className="flex h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 items-center justify-center rounded border border-[#808080] bg-[#c0c0c0] p-0.5 shrink-0 text-sm sm:text-base transition-transform duration-150 group-hover:scale-110">🗑</span>
+            <span className="text-center text-[9px] sm:text-[10px] md:text-xs leading-tight text-black truncate w-full max-w-full">Recycle Bin</span>
           </button>
         </div>
 
@@ -479,7 +517,7 @@ export default function Desktop() {
           </div>
         </div>
       </div>
-      {oracleActivated && <OracleConfrontation />}
+      {(oracleActivated || finaleOutcome === "lose") && <OracleConfrontation outcome={finaleOutcome === "lose" ? "lose" : "win"} />}
       {/* Desktop blackout during Phase 4 revelation */}
       {desktopBlackout && (
         <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black text-white font-mono text-center p-6">

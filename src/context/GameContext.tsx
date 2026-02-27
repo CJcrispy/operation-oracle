@@ -15,13 +15,13 @@ export const FILE_IDS = [1, 2, 3, 4, 5, 6, 7] as const;
 export type FileId = (typeof FILE_IDS)[number];
 
 /** Which app to open for each file unlock (File 2 → chess, File 3 → path_signal, etc.) */
-export const FILE_TO_APP: Record<FileId, "chess" | "path_signal" | null> = {
+export const FILE_TO_APP: Record<FileId, "chess" | "path_signal" | "slime2" | "uncledonk" | null> = {
   1: null, // direct / no puzzle
   2: "chess",
   3: "path_signal",
   4: null,
-  5: null,
-  6: null,
+  5: "slime2",
+  6: "uncledonk",
   7: null, // final - special handling
 };
 
@@ -76,6 +76,9 @@ export type GameContextValue = GameState & {
   triggerFinale: () => void;
   setFinalePhase: (p: FinalePhase) => void;
   reduceOracleStability: (amount: number) => void;
+  increaseOracleStability: (amount: number) => void;
+  finaleOutcome: "win" | "lose" | null;
+  setFinaleOutcome: (o: "win" | "lose" | null) => void;
   setContainment: (n: number) => void;
   setBlisswareRed: (v: boolean) => void;
   setBlisswareGlow: (v: boolean) => void;
@@ -96,6 +99,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [oracleActivated, setOracleActivated] = useState(false);
   const [finalePhase, setFinalePhaseState] = useState<FinalePhase>("idle");
   const [oracleStability, setOracleStability] = useState(100);
+  const [finaleOutcome, setFinaleOutcome] = useState<"win" | "lose" | null>(null);
   const [systemInstability, setSystemInstability] = useState(false);
   const [blisswareRed, setBlisswareRed] = useState(false);
   const [blisswareGlow, setBlisswareGlow] = useState(false);
@@ -154,12 +158,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setOracleStability((prev) => Math.max(0, prev - amount));
   }, []);
 
+  const increaseOracleStability = useCallback((amount: number) => {
+    setOracleStability((prev) => Math.min(100, prev + amount));
+  }, []);
+
   const addFinaleLines = useCallback((_lines: string[]) => {
     // Used by UnlockerTerminal to append lines - passed via callback
   }, []);
 
   const triggerFinale = useCallback(() => {
     setFinalePhaseState("instability");
+    setFinaleOutcome(null);
     setUnlockedFiles((prev) => (prev.includes(7) ? prev : ([...prev, 7].sort((a, b) => a - b) as (1 | 2 | 3 | 4 | 5 | 6 | 7)[])));
     setContainment(3);
     setSystemInstability(true);
@@ -194,6 +203,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       triggerFinale,
       setFinalePhase,
       reduceOracleStability,
+      increaseOracleStability,
+      finaleOutcome,
+      setFinaleOutcome,
       addFinaleLines,
       setContainment,
       setBlisswareRed,
@@ -231,7 +243,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       triggerFinale,
       setFinalePhase,
       reduceOracleStability,
+      increaseOracleStability,
+      finaleOutcome,
       addFinaleLines,
+      setFinaleOutcome,
       setSystemInstability,
       onExplorerCloseRef,
     ]
